@@ -92,18 +92,18 @@ export default function Home() {
 
             {/* Navigation */}
             <nav className="hidden md:flex gap-8">
-              <a href="#" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
+              <Link href="/" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Home
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#products" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
+              </Link>
+              <Link href="/products" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Products
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#brands" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
+              </Link>
+              <Link href="/brands" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Brands
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
-              </a>
+              </Link>
               <a href="#contact" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
@@ -153,7 +153,7 @@ export default function Home() {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <Link href="#products" className="btn-accent px-8 py-3 rounded-xl font-semibold text-base flex items-center gap-2">
+              <Link href="/products" className="btn-accent px-8 py-3 rounded-xl font-semibold text-base flex items-center gap-2">
                 <span>Browse Products</span>
                 <span>→</span>
               </Link>
@@ -170,6 +170,30 @@ export default function Home() {
               <div className="hidden md:block w-px h-4 bg-gray-300"></div>
               <div className="text-sm"><span className="font-semibold text-[#1D1D1F]">2-Year Warranty</span> on all products</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section id="categories" className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">Shop by Category</h3>
+            <p className="text-base text-[#86868B]">Explore laptops tailored to your needs</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: 'Gaming', emoji: '🎮', description: 'High FPS, RTX GPUs' },
+              { name: 'Business', emoji: '💼', description: 'Reliable, secure, productive' },
+              { name: 'Ultrabook', emoji: '🧳', description: 'Thin, light, premium' },
+              { name: 'Everyday', emoji: '☕', description: 'Great value for daily use' }
+            ].map((cat) => (
+              <Link key={cat.name} href={`/products?category=${encodeURIComponent(cat.name)}`} className="group block bg-white rounded-2xl border border-gray-100 p-6 shadow-subtle hover:shadow-md transition">
+                <div className="text-3xl mb-3">{cat.emoji}</div>
+                <div className="font-semibold text-lg text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors">{cat.name}</div>
+                <p className="text-sm text-[#86868B] mt-1">{cat.description}</p>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -277,9 +301,9 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-10">
-            <button className="btn-outline-accent px-8 py-3 rounded-xl font-semibold text-base">
+            <Link href="/products" className="btn-outline-accent px-8 py-3 rounded-xl font-semibold text-base inline-block">
               View All Products
-            </button>
+            </Link>
           </div>
         </div>
       </section>
