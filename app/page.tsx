@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
+  // const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -179,7 +179,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">Trusted by Leading Brands</h3>
-            <p className="text-base text-[#86868B]">We partner with the world's most reputable laptop manufacturers</p>
+            <p className="text-base text-[#86868B]">We partner with the world&apos;s most reputable laptop manufacturers</p>
           </div>
 
           <div className="flex items-center justify-center gap-10 md:gap-16">
@@ -217,8 +217,6 @@ export default function Home() {
               <div 
                 key={product.id} 
                 className="group bg-white rounded-2xl shadow-subtle border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
-                onMouseEnter={() => setHoveredProduct(product.id)}
-                onMouseLeave={() => setHoveredProduct(null)}
               >
                 {/* Product Image */}
                 <Link href={`/products/${product.id}`} className="block">

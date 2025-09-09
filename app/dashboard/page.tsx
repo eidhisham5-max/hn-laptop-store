@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function CustomerDashboard() {
   const [userEmail, setUserEmail] = useState('')
@@ -58,7 +59,7 @@ export default function CustomerDashboard() {
             Hello, {userEmail}
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a href="/" style={{
+            <Link href="/" style={{
               background: '#2563eb',
               color: 'white',
               padding: '0.75rem 1.5rem',
@@ -67,7 +68,7 @@ export default function CustomerDashboard() {
               fontWeight: '500'
             }}>
               Browse Products
-            </a>
+            </Link>
             <button 
               onClick={handleLogout}
               style={{

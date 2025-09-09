@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -78,7 +79,7 @@ export default function LoginPage() {
       } else {
         setError('Invalid email or password. Please check your credentials.')
       }
-    } catch (error) {
+    } catch {
       setError('Login failed. Please try again.')
     } finally {
       setIsLoading(false)
@@ -287,13 +288,13 @@ export default function LoginPage() {
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <a href="/" style={{
+          <Link href="/" style={{
             color: '#6b7280',
             fontSize: '0.875rem',
             textDecoration: 'none'
           }}>
             ← Back to Store
-          </a>
+          </Link>
         </div>
       </div>
     </div>

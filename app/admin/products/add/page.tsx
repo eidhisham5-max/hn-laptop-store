@@ -115,12 +115,15 @@ export default function AddProduct() {
         imageUrl = await uploadImage(imageFile)
       }
       
+      // استخدام imageUrl في الحفظ
+      console.log('Saving product with image:', imageUrl)
+      
       // محاكاة إرسال البيانات
       await new Promise(resolve => setTimeout(resolve, 2000))
       
       alert('Product added successfully!')
       router.push('/admin/products')
-    } catch (error) {
+    } catch {
       alert('Error adding product. Please try again.')
     } finally {
       setIsSubmitting(false)

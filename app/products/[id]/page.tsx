@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 
 interface Product {
   id: number
@@ -25,10 +25,10 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
-  const router = useRouter()
+  // const router = useRouter()
 
   // بيانات المنتجات التجريبية
-  const products: Product[] = [
+  const products = React.useMemo(() => [
     {
       id: 1,
       name: "Dell XPS 13",
@@ -89,14 +89,14 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
       stock: 5,
       discount: 13
     }
-  ]
+  ], [])
 
   useEffect(() => {
     const productId = parseInt(params.id)
     const foundProduct = products.find(p => p.id === productId)
     setProduct(foundProduct || null)
     setIsLoading(false)
-  }, [params.id])
+  }, [params.id, products])
 
   const addToCart = () => {
     if (product) {
@@ -111,7 +111,7 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
       
       // حفظ في localStorage
       const existingCart = JSON.parse(localStorage.getItem('cart') || '[]')
-      const existingItemIndex = existingCart.findIndex((item: any) => item.id === product.id)
+      const existingItemIndex = existingCart.findIndex((item: { id: number }) => item.id === product.id)
       
       if (existingItemIndex >= 0) {
         existingCart[existingItemIndex].quantity += quantity
@@ -140,7 +140,7 @@ export default function ProductDetails({ params }: { params: { id: string } }) {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-          <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
+          <p className="text-gray-600 mb-8">The product you&apos;re looking for doesn&apos;t exist.</p>
           <Link href="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
             Back to Home
           </Link>
