@@ -24,6 +24,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${poppins.variable} antialiased bg-white text-[#1D1D1F]`}>
         <ToastProvider>
+          <header className="sticky top-0 bg-white/90 backdrop-blur border-b z-40">
+            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+              <Link href="/" className="font-bold">H.N Laptop Store</Link>
+              <nav className="flex items-center gap-5 text-sm">
+                <Link href="/products">Products</Link>
+                <Link href="/orders">Track Order</Link>
+                <CartBadge />
+              </nav>
+            </div>
+          </header>
           {children}
         </ToastProvider>
       </body>

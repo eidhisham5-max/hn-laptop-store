@@ -15,18 +15,14 @@ export default function AccountPage() {
   useEffect(() => {
     // Check if user is logged in (for demo purposes)
     const isAdmin = localStorage.getItem('isAdmin')
-    const userType = localStorage.getItem('userType')
-    const isLoggedIn = localStorage.getItem('isLoggedIn')
     const userEmail = localStorage.getItem('userEmail')
-    if ((isAdmin === 'true' || userType === 'admin') && isLoggedIn === 'true' && userEmail) {
+    if (isAdmin && userEmail) {
       setIsLoggedIn(true)
     }
   }, [])
 
   const handleLogout = () => {
     localStorage.removeItem('isAdmin')
-    localStorage.removeItem('userType')
-    localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('userEmail')
     setIsLoggedIn(false)
     router.push('/')

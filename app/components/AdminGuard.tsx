@@ -14,11 +14,9 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   useEffect(() => {
     // Check if user is admin
     const adminStatus = localStorage.getItem('isAdmin')
-    const userType = localStorage.getItem('userType')
-    const isLoggedIn = localStorage.getItem('isLoggedIn')
     const userEmail = localStorage.getItem('userEmail')
     
-    if ((adminStatus === 'true' || userType === 'admin') && isLoggedIn === 'true' && userEmail) {
+    if (adminStatus === 'true' && userEmail) {
       setIsAdmin(true)
     } else {
       setIsAdmin(false)

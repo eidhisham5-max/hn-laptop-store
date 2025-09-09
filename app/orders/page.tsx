@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import { fetchOrdersByPhone } from '../data/db'
-import Header from '../components/Header'
 
 export default function CustomerOrdersPage() {
   const [phone, setPhone] = React.useState('')
@@ -21,8 +20,7 @@ export default function CustomerOrdersPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
-      <div className="container mx-auto px-4 py-10 pt-32">
+      <div className="container mx-auto px-4 py-10">
         <h1 className="text-3xl font-bold mb-6">Track your orders</h1>
         <div className="flex gap-2 mb-6">
           <input className="flex-1 px-3 py-2 border rounded-lg" placeholder="Phone number" value={phone} onChange={e=>setPhone(e.target.value)} />

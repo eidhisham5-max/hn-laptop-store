@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { fetchProducts } from '../data/db'
 import { addToCart } from '../data/products'
 import { useToast } from '../components/ToastProvider'
-import Header from '../components/Header'
 
 export default function ProductsListingPage() {
   const { showToast } = useToast()
@@ -55,8 +54,7 @@ export default function ProductsListingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <Header />
-      <div className="container mx-auto px-4 py-10 pt-32">
+      <div className="container mx-auto px-4 py-10">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1D1D1F]">Find your next laptop</h1>
           <p className="text-[#86868B] mt-2">Browse premium laptops with powerful specs and great prices.</p>
