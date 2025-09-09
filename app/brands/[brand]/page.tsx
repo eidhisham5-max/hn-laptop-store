@@ -27,7 +27,7 @@ export default function BrandPage({ params }: { params: { brand: string } }) {
   const brandName = decodeURIComponent(params.brand).toLowerCase()
 
   // بيانات المنتجات التجريبية
-  const allProducts: Product[] = [
+  const allProducts = React.useMemo(() => [
     {
       id: 1,
       name: "Dell XPS 13",
@@ -154,13 +154,13 @@ export default function BrandPage({ params }: { params: { brand: string } }) {
       stock: 7,
       discount: 14
     }
-  ]
+  ], [])
 
   useEffect(() => {
     const brandProducts = allProducts.filter(product => product.brand === brandName)
     setProducts(brandProducts)
     setIsLoading(false)
-  }, [brandName])
+  }, [brandName, allProducts])
 
   // فلترة وترتيب المنتجات
   const filteredAndSortedProducts = products
@@ -252,7 +252,7 @@ export default function BrandPage({ params }: { params: { brand: string } }) {
             No {brandInfo.name} Products Found
           </h1>
           <p className="text-gray-600 mb-8">
-            We don't currently have any {brandInfo.name} products in stock.
+            We don&apos;t currently have any {brandInfo.name} products in stock.
           </p>
           <Link href="/" className="bg-[#007AFF] text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
             Browse All Products

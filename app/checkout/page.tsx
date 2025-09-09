@@ -135,7 +135,7 @@ export default function CheckoutPage() {
       
       // توجيه لصفحة النجاح
       router.push('/success?orderId=' + orderData.id)
-    } catch (error) {
+    } catch {
       alert('حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى.')
     } finally {
       setIsSubmitting(false)

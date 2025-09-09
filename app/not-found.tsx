@@ -18,8 +18,8 @@ export default function NotFound() {
         </h1>
         
         <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-          The page you're looking for seems to have vanished into the digital void. 
-          Don't worry, our laptops are still here and ready to serve you!
+          The page you&apos;re looking for seems to have vanished into the digital void. 
+          Don&apos;t worry, our laptops are still here and ready to serve you!
         </p>
 
         {/* Action Buttons */}

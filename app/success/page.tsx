@@ -1,10 +1,16 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 
 export default function SuccessPage() {
-  const [orderDetails, setOrderDetails] = useState<any>(null)
+  const [orderDetails, setOrderDetails] = useState<{
+    id: number;
+    items: Array<{ id: number; name: string; price: number; image: string; quantity: number }>;
+    customer: { firstName: string; lastName: string; email: string; phone: string; city: string; governorate: string; paymentMethod: string };
+    total: number;
+  } | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const searchParams = useSearchParams()
   const orderId = searchParams.get('orderId')
@@ -13,7 +19,7 @@ export default function SuccessPage() {
     if (orderId) {
       // البحث عن الطلب في localStorage
       const orders = JSON.parse(localStorage.getItem('orders') || '[]')
-      const order = orders.find((o: any) => o.id.toString() === orderId)
+      const order = orders.find((o: { id: number }) => o.id.toString() === orderId)
       setOrderDetails(order)
     }
     setIsLoading(false)
@@ -73,7 +79,7 @@ export default function SuccessPage() {
             </h1>
             
             <p className="text-lg text-gray-600 mb-8">
-              Thank you for your order. We've received your request and will process it shortly.
+              Thank you for your order. We&apos;ve received your request and will process it shortly.
             </p>
           </div>
 
@@ -134,12 +140,14 @@ export default function SuccessPage() {
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="font-semibold text-gray-900 mb-4">Ordered Items</h3>
                 <div className="space-y-3">
-                  {orderDetails.items.map((item: any) => (
+                  {orderDetails.items.map((item) => (
                     <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 object-cover rounded-lg"
                         />
                         <div>
@@ -163,7 +171,7 @@ export default function SuccessPage() {
                 <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
                 <div>
                   <h4 className="font-semibold text-blue-900">Order Confirmation</h4>
-                  <p className="text-sm text-blue-700">We'll send you an email confirmation within minutes</p>
+                  <p className="text-sm text-blue-700">We&apos;ll send you an email confirmation within minutes</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -187,7 +195,7 @@ export default function SuccessPage() {
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-4">Need Help?</h3>
             <p className="text-gray-600 mb-4">
-              If you have any questions about your order, don't hesitate to contact us.
+              If you have any questions about your order, don&apos;t hesitate to contact us.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

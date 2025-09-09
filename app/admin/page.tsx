@@ -123,7 +123,7 @@ export default function AdminDashboard() {
                   Welcome back, Admin!
                 </h2>
                 <p className="text-gray-600 text-lg">
-                  Here's what's happening with your store today
+                  Here&apos;s what&apos;s happening with your store today
                 </p>
               </div>
             </div>
