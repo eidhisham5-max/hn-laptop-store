@@ -10,31 +10,79 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
-    setTimeout(() => {
-      if (userType === 'admin' && email === 'admin@hnstore.com' && password === 'admin123') {
+    // تنظيف وتحقق من الإدخالات
+    const cleanEmail = email.trim().toLowerCase()
+    const cleanPassword = password.trim()
+
+    // التحقق من صحة البيانات
+    if (!cleanEmail || !cleanPassword) {
+      setError('Please fill in all fields')
+      setIsLoading(false)
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      setError('Please enter a valid email address')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      // محاكاة API call مع تأخير
+      await new Promise(resolve => setTimeout(resolve, 1000))
+
+      if (userType === 'admin' && cleanEmail === 'admin@hnstore.com' && cleanPassword === 'admin123') {
+        // إنشاء session token أمان (في التطبيق الحقيقي سيكون JWT)
+        const sessionToken = btoa(JSON.stringify({
+          email: cleanEmail,
+          type: 'admin',
+          timestamp: Date.now()
+        }))
+
         if (typeof window !== 'undefined') {
           localStorage.setItem('userType', 'admin')
           localStorage.setItem('isLoggedIn', 'true')
-          localStorage.setItem('userEmail', email)
+          localStorage.setItem('userEmail', cleanEmail)
+          localStorage.setItem('sessionToken', sessionToken)
+          
+          // إضافة cookies للأمان
+          document.cookie = `admin-session=${sessionToken}; path=/; max-age=86400; secure; samesite=strict`
+          document.cookie = `user-type=admin; path=/; max-age=86400; secure; samesite=strict`
         }
+        
         router.push('/admin')
-      } else if (userType === 'customer' && email === 'customer@test.com' && password === 'customer123') {
+      } else if (userType === 'customer' && cleanEmail === 'customer@test.com' && cleanPassword === 'customer123') {
+        const sessionToken = btoa(JSON.stringify({
+          email: cleanEmail,
+          type: 'customer',
+          timestamp: Date.now()
+        }))
+
         if (typeof window !== 'undefined') {
           localStorage.setItem('userType', 'customer')
           localStorage.setItem('isLoggedIn', 'true')
-          localStorage.setItem('userEmail', email)
+          localStorage.setItem('userEmail', cleanEmail)
+          localStorage.setItem('sessionToken', sessionToken)
+          
+          // إضافة cookies للأمان
+          document.cookie = `user-session=${sessionToken}; path=/; max-age=86400; secure; samesite=strict`
+          document.cookie = `user-type=customer; path=/; max-age=86400; secure; samesite=strict`
         }
+        
         router.push('/dashboard')
       } else {
-        setError('Invalid email or password')
+        setError('Invalid email or password. Please check your credentials.')
       }
+    } catch (error) {
+      setError('Login failed. Please try again.')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
   }
 
   return (
