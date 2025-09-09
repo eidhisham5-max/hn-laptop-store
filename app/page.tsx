@@ -92,18 +92,18 @@ export default function Home() {
 
             {/* Navigation */}
             <nav className="hidden md:flex gap-8">
-              <a href="#" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
+              <Link href="/" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Home
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#products" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
+              </Link>
+              <Link href="/products" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Products
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
-              </a>
-              <a href="#brands" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
+              </Link>
+              <Link href="/brands" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Brands
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
-              </a>
+              </Link>
               <a href="#contact" className="relative text-[#1D1D1F] hover:text-[#007AFF] font-medium transition-colors group">
                 Contact
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#007AFF] group-hover:w-full transition-all duration-300"></span>
@@ -200,8 +200,70 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Categories Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">Shop by Category</h3>
+            <p className="text-base text-[#86868B]">Find the perfect laptop for your specific needs</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                name: 'Gaming Laptops',
+                description: 'High-performance laptops for gaming enthusiasts',
+                icon: '🎮',
+                href: '/products?category=gaming',
+                gradient: 'from-red-500 to-pink-500'
+              },
+              {
+                name: 'Business Laptops',
+                description: 'Professional laptops for work and productivity',
+                icon: '💼',
+                href: '/products?category=business',
+                gradient: 'from-blue-500 to-indigo-500'
+              },
+              {
+                name: 'Ultrabooks',
+                description: 'Lightweight and portable premium laptops',
+                icon: '✨',
+                href: '/products?category=ultrabook',
+                gradient: 'from-purple-500 to-blue-500'
+              },
+              {
+                name: 'Everyday Laptops',
+                description: 'Affordable laptops for daily use',
+                icon: '🏠',
+                href: '/products?category=everyday',
+                gradient: 'from-green-500 to-teal-500'
+              }
+            ].map((category) => (
+              <Link key={category.name} href={category.href} className="group">
+                <div className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
+                  <div className="relative p-8 text-center">
+                    <div className="text-4xl mb-4">{category.icon}</div>
+                    <h4 className="text-xl font-semibold mb-2 text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors">
+                      {category.name}
+                    </h4>
+                    <p className="text-sm text-[#86868B] leading-relaxed">
+                      {category.description}
+                    </p>
+                    <div className="mt-4 inline-flex items-center text-[#007AFF] text-sm font-medium group-hover:gap-2 transition-all">
+                      <span>Explore</span>
+                      <span className="ml-1 group-hover:ml-0 transition-all">→</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Featured Products */}
-      <section id="products" className="py-16 bg-white">
+      <section id="products" className="py-16 bg-[#F5F7FA]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">
@@ -277,9 +339,9 @@ export default function Home() {
           </div>
 
           <div className="text-center mt-10">
-            <button className="btn-outline-accent px-8 py-3 rounded-xl font-semibold text-base">
+            <Link href="/products" className="btn-outline-accent px-8 py-3 rounded-xl font-semibold text-base inline-block">
               View All Products
-            </button>
+            </Link>
           </div>
         </div>
       </section>
