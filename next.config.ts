@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'upload.wikimedia.org',
+      },
+      // Supabase storage domain (exact hostname)
+      {
+        protocol: 'https',
+        hostname: 'whulchwxpwdoxemyovgg.supabase.co',
       }
     ],
   },

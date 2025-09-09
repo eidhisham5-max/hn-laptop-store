@@ -3,31 +3,36 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { createProduct, fetchBrands, createBrand } from '../../../data/db'
+import { useToast } from '../../../components/ToastProvider'
 
 export default function AddProduct() {
+  const { showToast } = useToast()
   const [isLoading, setIsLoading] = useState(true)
   const [userEmail, setUserEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [brands, setBrands] = useState<{ id: number; name: string }[]>([])
+  const [newBrandName, setNewBrandName] = useState('')
   const router = useRouter()
 
   // حالة النموذج
   const [formData, setFormData] = useState({
     name: '',
-    brand: '',
+    brand_id: '',
     price: '',
-    originalPrice: '',
+    original_price: '',
     stock: '',
     condition: 'New',
     specs: '',
     description: '',
-    image: ''
+    imagesText: '' // سطر أو عدة أسطر لروابط الصور
   })
 
-  // حالة رفع الصورة
+  // حالة رفع الصورة (اختياري لاحقًا للتخزين)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
 
-  // التحقق من تسجيل الدخول
+  // التحقق من تسجيل الدخول + تحميل البراندز
   useEffect(() => {
     const userType = localStorage.getItem('userType')
     const isLoggedIn = localStorage.getItem('isLoggedIn')
@@ -37,9 +42,9 @@ export default function AddProduct() {
       router.push('/login')
       return
     }
-    
     setUserEmail(email || '')
-    setIsLoading(false)
+
+    fetchBrands().then(b => setBrands(b)).finally(()=>setIsLoading(false))
   }, [router])
 
   const handleLogout = () => {
@@ -57,71 +62,76 @@ export default function AddProduct() {
     }))
   }
 
-  // معالجة رفع الصورة
+  // معالجة رفع صورة واحدة (اختياري حالياً)
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // التحقق من نوع الملف
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
-        return
-      }
-
-      // التحقق من حجم الملف (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB')
-        return
-      }
-
+      if (!file.type.startsWith('image/')) { alert('Please select an image file'); return }
+      if (file.size > 5 * 1024 * 1024) { alert('Image size should be less than 5MB'); return }
       setImageFile(file)
-      
-      // إنشاء معاينة للصورة
       const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
+      reader.onload = (ev) => setImagePreview(ev.target?.result as string)
       reader.readAsDataURL(file)
     }
   }
 
-  // رفع الصورة إلى الخادم
+  // TODO: يمكن لاحقاً رفع الملف إلى Supabase Storage وإرجاع رابط عام
   const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData()
-    formData.append('image', file)
-    
-    // محاكاة رفع الصورة (في التطبيق الحقيقي، ستكون API call)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // إرجاع رابط وهمي للصورة
+    await new Promise(r => setTimeout(r, 600))
     return `/uploads/${file.name}`
+  }
+
+  const ensureBrandId = async (): Promise<number> => {
+    if (formData.brand_id && formData.brand_id !== '__new__') return Number(formData.brand_id)
+    const name = newBrandName.trim()
+    if (!name) throw new Error('Please select a brand or enter a new brand name')
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    const created = await createBrand({ name, slug })
+    // refresh list and set selected
+    const b = await fetchBrands()
+    setBrands(b)
+    setFormData(prev => ({ ...prev, brand_id: String(created.id) }))
+    return created.id
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
     try {
-      // التحقق من وجود صورة
-      if (!imageFile && !formData.image) {
-        alert('Please upload an image or enter an image URL')
-        setIsSubmitting(false)
-        return
-      }
-      
-      let imageUrl = formData.image
-      
-      // إذا تم رفع صورة، قم برفعها أولاً
+      const brandId = await ensureBrandId()
+
+      // تجهيز صور الإدخال (سطر/أسطر)
+      const imagesFromText = formData.imagesText
+        .split(/\n|,/) // أسطر أو فواصل
+        .map(s => s.trim())
+        .filter(Boolean)
+
+      let firstImageUrl: string | undefined
       if (imageFile) {
-        imageUrl = await uploadImage(imageFile)
+        firstImageUrl = await uploadImage(imageFile)
       }
-      
-      // محاكاة إرسال البيانات
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      alert('Product added successfully!')
+      const images = firstImageUrl ? [firstImageUrl, ...imagesFromText] : imagesFromText
+
+      // الإدراج في قاعدة البيانات
+      await createProduct({
+        name: formData.name,
+        brand_id: brandId,
+        category: undefined,
+        price: parseFloat(formData.price),
+        original_price: formData.original_price ? parseFloat(formData.original_price) : null,
+        stock: parseInt(formData.stock || '0', 10),
+        condition: formData.condition as any,
+        specs: formData.specs,
+        description: formData.description || null,
+        discount: formData.original_price ? Math.max(0, Math.round((1 - parseFloat(formData.price)/parseFloat(formData.original_price))*100)) : null,
+        status: 'Active',
+        images
+      })
+
+      showToast('Product added successfully!', 'success')
       router.push('/admin/products')
-    } catch (error) {
-      alert('Error adding product. Please try again.')
+    } catch (err: any) {
+      showToast(err?.message || 'Error adding product. Please try again.', 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -222,20 +232,43 @@ export default function AddProduct() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Brand *
                 </label>
-                <select
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select Brand</option>
-                  <option value="Dell">Dell</option>
-                  <option value="HP">HP</option>
-                  <option value="Lenovo">Lenovo</option>
-                  <option value="Asus">Asus</option>
-                  <option value="Acer">Acer</option>
-                </select>
+                {brands.length === 0 ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="Enter new brand name"
+                      value={newBrandName}
+                      onChange={(e)=>setNewBrandName(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500">No brands yet. A new brand will be created on submit.</p>
+                  </div>
+                ) : (
+                  <>
+                    <select
+                      name="brand_id"
+                      value={formData.brand_id}
+                      onChange={handleInputChange}
+                      required={!newBrandName}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select Brand</option>
+                      {brands.map(b => (
+                        <option key={b.id} value={b.id}>{b.name}</option>
+                      ))}
+                      <option value="__new__">+ Add new brand</option>
+                    </select>
+                    {formData.brand_id === '__new__' && (
+                      <input
+                        type="text"
+                        placeholder="New brand name"
+                        value={newBrandName}
+                        onChange={(e)=>setNewBrandName(e.target.value)}
+                        className="mt-2 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Price */}
@@ -263,8 +296,8 @@ export default function AddProduct() {
                 </label>
                 <input
                   type="number"
-                  name="originalPrice"
-                  value={formData.originalPrice}
+                  name="original_price"
+                  value={formData.original_price}
                   onChange={handleInputChange}
                   min="0"
                   step="0.01"
@@ -340,57 +373,41 @@ export default function AddProduct() {
               />
             </div>
 
-            {/* Image Upload */}
+            {/* Image Upload (اختياري) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Product Image *
+                Product Image (optional)
               </label>
-              
-              {/* خيار رفع الصورة */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Upload from Computer
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Supported formats: JPG, PNG, GIF (Max 5MB)
-                </p>
-              </div>
-
-              {/* أو إدخال رابط */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Or enter image URL
-                </label>
-                <input
-                  type="url"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://images.unsplash.com/photo-..."
-                />
-              </div>
-
-              {/* معاينة الصورة */}
-              {(imagePreview || formData.image) && (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              {(imagePreview) && (
                 <div className="mt-4">
                   <p className="text-sm text-gray-600 mb-2">Preview:</p>
                   <div className="w-32 h-32 relative border border-gray-300 rounded-lg overflow-hidden">
-                    <Image
-                      src={imagePreview || formData.image}
-                      alt="Product preview"
-                      fill
-                      className="object-cover"
-                    />
+                    <Image src={imagePreview} alt="Product preview" fill className="object-cover" />
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Images URLs */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Image URLs (one per line or comma separated)
+              </label>
+              <textarea
+                name="imagesText"
+                value={formData.imagesText}
+                onChange={handleInputChange}
+                rows={3}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://...\nhttps://..."
+              />
+              <p className="text-xs text-gray-500 mt-1">You can paste multiple links.</p>
             </div>
 
             {/* Submit Buttons */}
