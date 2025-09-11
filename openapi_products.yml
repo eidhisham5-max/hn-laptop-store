@@ -1,0 +1,1068 @@
+openapi: 3.0.3
+info:
+  title: H.N Laptop Store API
+  description: |
+    Comprehensive API for H.N Laptop Store e-commerce platform
+    
+    ## Features
+    - Product catalog management
+    - User authentication and profiles
+    - Shopping cart and checkout
+    - Order management
+    - Event tracking for analytics
+    - Search and filtering
+    - Reviews and ratings
+    
+    ## Authentication
+    Most endpoints require authentication via JWT tokens.
+    
+    ## Rate Limiting
+    API calls are limited to 1000 requests per hour per user.
+    
+    ## Error Handling
+    All errors follow RFC 7807 Problem Details standard.
+  version: 1.0.0
+  contact:
+    name: H.N Laptop Store API Team
+    email: api-support@hnlaptop.com
+    url: https://api.hnlaptop.com/docs
+  license:
+    name: Proprietary
+    url: https://hnlaptop.com/legal/api-license
+
+servers:
+  - url: https://api.hnlaptop.com/v1
+    description: Production server
+  - url: https://staging-api.hnlaptop.com/v1
+    description: Staging server
+  - url: http://localhost:3000/api/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+tags:
+  - name: Products
+    description: Product catalog operations
+  - name: Categories
+    description: Product category management
+  - name: Search
+    description: Product search and filtering
+  - name: Cart
+    description: Shopping cart operations
+  - name: Orders
+    description: Order management
+  - name: Users
+    description: User account management
+  - name: Reviews
+    description: Product reviews and ratings
+  - name: Analytics
+    description: Event tracking and analytics
+  - name: Recommendations
+    description: ML-powered product recommendations
+
+paths:
+  # =====================================================
+  # PRODUCTS ENDPOINTS
+  # =====================================================
+  
+  /products:
+    get:
+      tags: [Products]
+      summary: Get products list
+      description: Retrieve paginated list of products with filtering and sorting
+      parameters:
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of products per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: category
+          in: query
+          description: Filter by category ID
+          schema:
+            type: string
+        - name: brand
+          in: query
+          description: Filter by brand
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          description: Minimum price filter (in EGP)
+          schema:
+            type: number
+            minimum: 0
+        - name: max_price
+          in: query
+          description: Maximum price filter (in EGP)
+          schema:
+            type: number
+            minimum: 0
+        - name: sort
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [price_asc, price_desc, name_asc, name_desc, rating_desc, newest, popularity]
+            default: popularity
+        - name: in_stock
+          in: query
+          description: Filter by stock availability
+          schema:
+            type: boolean
+        - name: language
+          in: query
+          description: Response language
+          schema:
+            type: string
+            enum: [ar, en]
+            default: en
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  filters:
+                    $ref: '#/components/schemas/AppliedFilters'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /products/{productId}:
+    get:
+      tags: [Products]
+      summary: Get product details
+      description: Retrieve detailed information for a specific product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Product ID
+          schema:
+            type: string
+        - name: language
+          in: query
+          description: Response language
+          schema:
+            type: string
+            enum: [ar, en]
+            default: en
+      responses:
+        '200':
+          description: Product details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # =====================================================
+  # SEARCH ENDPOINTS
+  # =====================================================
+  
+  /search:
+    get:
+      tags: [Search]
+      summary: Search products
+      description: Full-text search across products with autocomplete and suggestions
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+        - name: brand
+          in: query
+          description: Filter by brand
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [relevance, price_asc, price_desc, rating_desc, newest]
+            default: relevance
+        - name: language
+          in: query
+          schema:
+            type: string
+            enum: [ar, en]
+            default: en
+      responses:
+        '200':
+          description: Search results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+                  search_metadata:
+                    type: object
+                    properties:
+                      query:
+                        type: string
+                      total_results:
+                        type: integer
+                      search_time_ms:
+                        type: integer
+                      suggestions:
+                        type: array
+                        items:
+                          type: string
+                      facets:
+                        $ref: '#/components/schemas/SearchFacets'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /search/autocomplete:
+    get:
+      tags: [Search]
+      summary: Get search autocomplete suggestions
+      description: Get real-time search suggestions as user types
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Partial search query
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 100
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            default: 5
+        - name: language
+          in: query
+          schema:
+            type: string
+            enum: [ar, en]
+            default: en
+      responses:
+        '200':
+          description: Autocomplete suggestions retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        type:
+                          type: string
+                          enum: [product, brand, category, query]
+                        score:
+                          type: number
+
+  # =====================================================
+  # CART ENDPOINTS
+  # =====================================================
+  
+  /cart:
+    get:
+      tags: [Cart]
+      summary: Get cart contents
+      description: Retrieve current user's shopping cart
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Cart]
+      summary: Add item to cart
+      description: Add a product to the shopping cart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id, quantity]
+              properties:
+                product_id:
+                  type: string
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                variant_id:
+                  type: string
+                  description: Product variant if applicable
+      responses:
+        '200':
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /cart/items/{itemId}:
+    put:
+      tags: [Cart]
+      summary: Update cart item
+      description: Update quantity or remove item from cart
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 0
+                  maximum: 10
+                  description: Set to 0 to remove item
+      responses:
+        '200':
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Cart]
+      summary: Remove item from cart
+      description: Remove a specific item from the shopping cart
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Item removed from cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # =====================================================
+  # ANALYTICS ENDPOINTS
+  # =====================================================
+  
+  /analytics/events:
+    post:
+      tags: [Analytics]
+      summary: Track user events
+      description: |
+        Track user behavior events for analytics and personalization.
+        Supports batch event submission for performance.
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/AnalyticsEvent'
+                - type: object
+                  properties:
+                    events:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/AnalyticsEvent'
+                      maxItems: 100
+            examples:
+              single_event:
+                summary: Single event
+                value:
+                  event_name: "product_view"
+                  timestamp: "2025-01-15T10:30:00Z"
+                  session_id: "sess_12345"
+                  user_id_pseudonym: "user_hash_abc123"
+                  event_params:
+                    product_id: "laptop_dell_123"
+                    price: 15999
+                    currency: "EGP"
+                    category: "Laptops"
+              batch_events:
+                summary: Batch events
+                value:
+                  events:
+                    - event_name: "page_view"
+                      timestamp: "2025-01-15T10:30:00Z"
+                      session_id: "sess_12345"
+                      event_params:
+                        page_type: "product_detail"
+                        language: "ar"
+                    - event_name: "product_view"
+                      timestamp: "2025-01-15T10:30:05Z"
+                      session_id: "sess_12345"
+                      event_params:
+                        product_id: "laptop_dell_123"
+                        price: 15999
+                        currency: "EGP"
+      responses:
+        '202':
+          description: Events accepted for processing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "accepted"
+                  events_processed:
+                    type: integer
+                    example: 2
+                  processing_time_ms:
+                    type: integer
+                    example: 45
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/RateLimit'
+
+  # =====================================================
+  # RECOMMENDATIONS ENDPOINTS
+  # =====================================================
+  
+  /recommendations/{userId}/products:
+    get:
+      tags: [Recommendations]
+      summary: Get personalized product recommendations
+      description: |
+        Get ML-powered product recommendations for a user.
+        Requires user consent for personalization.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: Type of recommendations
+          schema:
+            type: string
+            enum: [similar_products, frequently_bought_together, recommended_for_you, trending]
+            default: recommended_for_you
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+        - name: context
+          in: query
+          description: Context for recommendations
+          schema:
+            type: string
+            enum: [homepage, product_detail, cart, category]
+        - name: product_id
+          in: query
+          description: Product ID for context (e.g., for similar products)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Recommendations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          $ref: '#/components/schemas/Product'
+                        score:
+                          type: number
+                          description: Recommendation confidence score (0-1)
+                        reason:
+                          type: string
+                          description: Explanation for recommendation
+                  metadata:
+                    type: object
+                    properties:
+                      algorithm_version:
+                        type: string
+                      personalization_enabled:
+                        type: boolean
+                      fallback_used:
+                        type: boolean
+                      explanation:
+                        type: string
+                        description: Why these products were recommended
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Personalization consent required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                type: "consent_required"
+                title: "Personalization Consent Required"
+                detail: "User has not consented to personalization features"
+                
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    Product:
+      type: object
+      required: [id, name, price, currency, brand, category, in_stock]
+      properties:
+        id:
+          type: string
+          example: "laptop_dell_123"
+        name:
+          type: string
+          example: "Dell Inspiron 15 3000"
+        name_ar:
+          type: string
+          example: "ديل إنسبايرون 15 3000"
+        description:
+          type: string
+        description_ar:
+          type: string
+        price:
+          type: number
+          example: 15999
+        original_price:
+          type: number
+          example: 18999
+        currency:
+          type: string
+          enum: [EGP, USD]
+          example: "EGP"
+        brand:
+          type: string
+          example: "Dell"
+        category:
+          type: string
+          example: "Laptops"
+        subcategory:
+          type: string
+          example: "Budget Laptops"
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+              alt_text:
+                type: string
+              alt_text_ar:
+                type: string
+              is_primary:
+                type: boolean
+        specifications:
+          type: object
+          additionalProperties: true
+          example:
+            processor: "Intel Core i5-1135G7"
+            memory: "8GB DDR4"
+            storage: "256GB SSD"
+            display: "15.6\" HD"
+        rating:
+          type: object
+          properties:
+            average:
+              type: number
+              minimum: 0
+              maximum: 5
+              example: 4.2
+            count:
+              type: integer
+              example: 156
+        in_stock:
+          type: boolean
+          example: true
+        stock_quantity:
+          type: integer
+          example: 25
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+        - type: object
+          properties:
+            long_description:
+              type: string
+            long_description_ar:
+              type: string
+            features:
+              type: array
+              items:
+                type: string
+            features_ar:
+              type: array
+              items:
+                type: string
+            warranty:
+              type: object
+              properties:
+                duration_months:
+                  type: integer
+                type:
+                  type: string
+                description:
+                  type: string
+                description_ar:
+                  type: string
+            shipping:
+              type: object
+              properties:
+                free_shipping:
+                  type: boolean
+                estimated_days:
+                  type: integer
+                cost:
+                  type: number
+            related_products:
+              type: array
+              items:
+                $ref: '#/components/schemas/Product'
+            reviews:
+              type: object
+              properties:
+                summary:
+                  $ref: '#/components/schemas/ReviewSummary'
+                recent_reviews:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Review'
+
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        totals:
+          type: object
+          properties:
+            subtotal:
+              type: number
+            tax:
+              type: number
+            shipping:
+              type: number
+            discount:
+              type: number
+            total:
+              type: number
+            currency:
+              type: string
+        item_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+        quantity:
+          type: integer
+        unit_price:
+          type: number
+        total_price:
+          type: number
+        variant_id:
+          type: string
+        added_at:
+          type: string
+          format: date-time
+
+    AnalyticsEvent:
+      type: object
+      required: [event_name, timestamp, session_id]
+      properties:
+        event_name:
+          type: string
+          enum: [
+            page_view, product_view, impression, add_to_cart, remove_from_cart,
+            begin_checkout, checkout_progress, payment_info, purchase,
+            search, filter_applied, sort_changed, signup, login, logout,
+            add_to_wishlist, remove_from_wishlist, promo_applied,
+            recommendation_view, recommendation_click, consent_granted,
+            consent_withdrawn, newsletter_signup, review_write, review_helpful,
+            chat_initiated, scroll_depth, time_on_page, error_occurred,
+            form_abandonment, ab_test_exposure
+          ]
+        timestamp:
+          type: string
+          format: date-time
+        session_id:
+          type: string
+          pattern: '^sess_[a-zA-Z0-9]{8}$'
+        user_id_pseudonym:
+          type: string
+          description: Pseudonymized user ID (SHA-256 hash)
+        event_params:
+          type: object
+          additionalProperties: true
+          description: Event-specific parameters
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        product_id:
+          type: string
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+        title:
+          type: string
+        title_ar:
+          type: string
+        content:
+          type: string
+        content_ar:
+          type: string
+        verified_purchase:
+          type: boolean
+        helpful_votes:
+          type: integer
+        total_votes:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    ReviewSummary:
+      type: object
+      properties:
+        average_rating:
+          type: number
+          minimum: 0
+          maximum: 5
+        total_reviews:
+          type: integer
+        rating_distribution:
+          type: object
+          properties:
+            "5":
+              type: integer
+            "4":
+              type: integer
+            "3":
+              type: integer
+            "2":
+              type: integer
+            "1":
+              type: integer
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        total_pages:
+          type: integer
+        total_items:
+          type: integer
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+
+    AppliedFilters:
+      type: object
+      properties:
+        category:
+          type: string
+        brand:
+          type: array
+          items:
+            type: string
+        price_range:
+          type: object
+          properties:
+            min:
+              type: number
+            max:
+              type: number
+        in_stock:
+          type: boolean
+        rating_min:
+          type: number
+
+    SearchFacets:
+      type: object
+      properties:
+        brands:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              count:
+                type: integer
+        categories:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              count:
+                type: integer
+        price_ranges:
+          type: array
+          items:
+            type: object
+            properties:
+              range:
+                type: string
+              count:
+                type: integer
+
+    Error:
+      type: object
+      required: [type, title]
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference that identifies the problem type
+        title:
+          type: string
+          description: A short, human-readable summary of the problem
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Human-readable explanation specific to this occurrence
+        instance:
+          type: string
+          format: uri
+          description: URI reference that identifies the specific occurrence
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters or request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: "bad_request"
+            title: "Invalid request parameters"
+            status: 400
+            detail: "The 'limit' parameter must be between 1 and 100"
+
+    Unauthorized:
+      description: Unauthorized - authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: "unauthorized"
+            title: "Authentication required"
+            status: 401
+            detail: "A valid JWT token is required to access this resource"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: "not_found"
+            title: "Resource not found"
+            status: 404
+            detail: "The requested product could not be found"
+
+    RateLimit:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per hour
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in current window
+        X-RateLimit-Reset:
+          schema:
+            type: integer
+          description: Unix timestamp when rate limit resets
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: "rate_limit_exceeded"
+            title: "Rate limit exceeded"
+            status: 429
+            detail: "API rate limit of 1000 requests per hour exceeded"
+
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            type: "internal_error"
+            title: "Internal server error"
+            status: 500
+            detail: "An unexpected error occurred while processing your request"
+
+# Owner: Backend Developer + API Architect
+# Est. Effort: 7 person-days
+# Acceptance Criteria:
+# - OpenAPI specification is valid and follows best practices
+# - All endpoints include proper authentication and validation
+# - Analytics event tracking is comprehensive and privacy-compliant
+# - API supports both Arabic and English content
+# - Error handling follows RFC 7807 standard
+# - Rate limiting and security measures are properly documented

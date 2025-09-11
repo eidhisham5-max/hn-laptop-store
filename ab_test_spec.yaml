@@ -1,0 +1,570 @@
+# A/B Testing Specification Template
+# H.N Laptop Store - Comprehensive Experimentation Framework
+
+metadata:
+  version: "1.0.0"
+  created_date: "2025-01-15"
+  last_updated: "2025-01-15"
+  template_type: "ab_test_specification"
+
+# =====================================================
+# EXPERIMENT CONFIGURATION
+# =====================================================
+
+experiment:
+  id: "exp_cta_button_color_001"
+  name: "CTA Button Color Optimization"
+  description: "Test impact of orange vs blue primary CTA buttons on add-to-cart conversion rate"
+  
+  # Experiment metadata
+  owner: "product_team@hnlaptop.com"
+  stakeholders: 
+    - "ux_team@hnlaptop.com"
+    - "marketing_team@hnlaptop.com"
+    - "data_team@hnlaptop.com"
+  
+  # Timeline
+  planned_start_date: "2025-01-20"
+  planned_end_date: "2025-02-10"
+  estimated_duration_days: 21
+  
+  # Status tracking
+  status: "draft" # draft, review, approved, running, paused, completed, cancelled
+  priority: "high" # low, medium, high, critical
+  
+  # Risk assessment
+  risk_level: "low" # low, medium, high
+  rollback_plan: "Immediate revert to control variant if conversion drops >10%"
+
+# =====================================================
+# HYPOTHESIS & OBJECTIVES
+# =====================================================
+
+hypothesis:
+  primary: "Changing the primary CTA button color from blue (#0B6DF3) to orange (#FF6A00) will increase add-to-cart conversion rate by at least 0.5 percentage points due to improved visual contrast and urgency perception."
+  
+  secondary_hypotheses:
+    - "Orange buttons will perform better on mobile devices due to higher thumb accessibility"
+    - "Arabic users will show stronger preference for orange due to cultural color associations"
+    - "Higher-priced products will benefit more from orange CTA buttons"
+  
+  rationale: |
+    Based on NeuroBehavioral Design principles:
+    1. Perceptual Layer: Orange provides higher contrast against white backgrounds
+    2. Cognitive Layer: Orange is associated with urgency and action
+    3. Affective Layer: Orange evokes excitement and enthusiasm
+    4. Previous industry studies show 15-25% improvement with warm CTA colors
+
+business_objectives:
+  primary: "Increase add-to-cart conversion rate"
+  secondary:
+    - "Improve mobile user experience"
+    - "Enhance brand differentiation"
+    - "Validate design system color choices"
+  
+  success_criteria:
+    - "Statistically significant improvement in add-to-cart rate"
+    - "No negative impact on overall user experience metrics"
+    - "Positive qualitative feedback from user interviews"
+
+# =====================================================
+# STATISTICAL DESIGN
+# =====================================================
+
+statistical_design:
+  # Primary metric
+  primary_metric:
+    name: "add_to_cart_conversion_rate"
+    description: "Percentage of product page sessions that result in add-to-cart action"
+    calculation: "(add_to_cart_events / product_page_sessions) * 100"
+    
+  # Baseline assumptions
+  baseline:
+    current_conversion_rate: 0.020 # 2.0%
+    historical_data_period: "30_days"
+    seasonal_adjustments: "none"
+    
+  # Target improvement
+  target:
+    minimum_detectable_effect: 0.005 # 0.5 percentage points (25% relative improvement)
+    target_conversion_rate: 0.025 # 2.5%
+    relative_improvement_percent: 25
+    
+  # Statistical parameters
+  power_analysis:
+    alpha: 0.05 # Type I error rate
+    beta: 0.20 # Type II error rate  
+    power: 0.80 # 1 - beta
+    two_tailed: true
+    
+  # Sample size calculation
+  sample_size:
+    calculation_method: "two_proportion_z_test"
+    
+    # Detailed calculation:
+    # p1 = 0.020, p2 = 0.025, delta = 0.005
+    # alpha = 0.05 → z_α/2 = 1.96
+    # power = 0.80 → z_β = 0.84
+    # p̄ = (p1 + p2) / 2 = 0.0225
+    
+    # sqrt_term1 = sqrt(2 * p̄ * (1 - p̄))
+    # = sqrt(2 * 0.0225 * 0.9775) = sqrt(0.0439875) = 0.209761
+    
+    # sqrt_term2 = sqrt(p1*(1-p1) + p2*(1-p2))
+    # = sqrt(0.02*0.98 + 0.025*0.975) = sqrt(0.0196 + 0.024375) = sqrt(0.043975) = 0.209691
+    
+    # n = [(z_α/2 * sqrt_term1) + (z_β * sqrt_term2)]² / delta²
+    # n = [(1.96 * 0.209761) + (0.84 * 0.209691)]² / (0.005)²
+    # n = [0.41113 + 0.17614]² / 0.000025
+    # n = 0.58727² / 0.000025 = 0.34489 / 0.000025 = 13,795.6
+    
+    per_variant: 13796 # sessions per variant
+    total_required: 27592 # total sessions needed
+    buffer_percentage: 10 # account for data quality issues
+    final_per_variant: 15176 # with 10% buffer
+    final_total: 30352 # total with buffer
+    
+  # Duration estimation
+  duration_estimate:
+    daily_sessions: 1500 # estimated daily product page sessions
+    days_needed: 21 # 30352 / 1500 ≈ 20.2 days
+    recommended_duration: 21 # round up for weekly alignment
+    minimum_duration: 14 # ensure statistical validity
+    maximum_duration: 35 # avoid seasonal effects
+
+# =====================================================
+# EXPERIMENT VARIANTS
+# =====================================================
+
+variants:
+  control:
+    id: "control_blue_button"
+    name: "Blue CTA Button (Control)"
+    description: "Current blue primary button (#0B6DF3)"
+    traffic_allocation: 50 # percentage
+    
+    design_specs:
+      button_background_color: "#0B6DF3"
+      button_text_color: "#FFFFFF"
+      button_hover_color: "#054FB3"
+      button_active_color: "#004999"
+      button_shadow: "0 2px 4px rgba(11, 109, 243, 0.2)"
+      
+    implementation:
+      css_class: "btn-primary-blue"
+      feature_flag: "cta_button_color_control"
+      
+  treatment:
+    id: "treatment_orange_button"
+    name: "Orange CTA Button (Treatment)"
+    description: "New orange primary button (#FF6A00)"
+    traffic_allocation: 50 # percentage
+    
+    design_specs:
+      button_background_color: "#FF6A00"
+      button_text_color: "#FFFFFF"
+      button_hover_color: "#E55A00"
+      button_active_color: "#CC5100"
+      button_shadow: "0 2px 4px rgba(255, 106, 0, 0.2)"
+      
+    implementation:
+      css_class: "btn-primary-orange"
+      feature_flag: "cta_button_color_treatment"
+
+# =====================================================
+# TARGETING & SEGMENTATION
+# =====================================================
+
+targeting:
+  # Inclusion criteria
+  include:
+    pages: 
+      - "product_detail"
+      - "category_listing"
+    user_types:
+      - "new_users"
+      - "returning_users"
+    devices:
+      - "desktop"
+      - "mobile"
+      - "tablet"
+    languages:
+      - "ar"
+      - "en"
+    geographies:
+      - "egypt"
+      
+  # Exclusion criteria
+  exclude:
+    user_agents:
+      - "bot"
+      - "crawler"
+      - "spider"
+    users:
+      - "internal_employees"
+      - "qa_testers"
+    sessions:
+      - "bounce_sessions" # sessions with <10 seconds duration
+      
+  # Traffic allocation
+  traffic:
+    percentage: 100 # percentage of eligible users
+    ramp_up_schedule:
+      - day: 1, percentage: 10
+      - day: 3, percentage: 25  
+      - day: 5, percentage: 50
+      - day: 7, percentage: 100
+    
+  # Randomization
+  randomization:
+    unit: "session_id" # session_id, user_id, device_id
+    hash_function: "sha256"
+    seed: "exp_cta_button_color_001_2025"
+    sticky: true # same user gets same variant across sessions
+
+# =====================================================
+# METRICS & KPIs
+# =====================================================
+
+metrics:
+  # Primary metrics
+  primary:
+    - name: "add_to_cart_conversion_rate"
+      description: "Primary success metric"
+      type: "conversion_rate"
+      calculation: "add_to_cart_events / product_page_sessions"
+      statistical_test: "two_proportion_z_test"
+      minimum_detectable_effect: 0.005
+      
+  # Secondary metrics
+  secondary:
+    - name: "click_through_rate"
+      description: "CTA button click rate"
+      type: "conversion_rate" 
+      calculation: "button_clicks / button_impressions"
+      
+    - name: "time_to_add_to_cart"
+      description: "Time from page load to add-to-cart"
+      type: "duration"
+      calculation: "avg(add_to_cart_timestamp - page_load_timestamp)"
+      
+    - name: "bounce_rate"
+      description: "Single page session rate"
+      type: "conversion_rate"
+      calculation: "single_page_sessions / total_sessions"
+      
+    - name: "session_duration"
+      description: "Average session length"
+      type: "duration"
+      calculation: "avg(session_end_timestamp - session_start_timestamp)"
+      
+  # Guardrail metrics (should not degrade)
+  guardrails:
+    - name: "overall_conversion_rate"
+      description: "End-to-end purchase conversion"
+      type: "conversion_rate"
+      calculation: "purchases / sessions"
+      max_degradation: -0.002 # -0.2 percentage points
+      
+    - name: "average_order_value"
+      description: "Revenue per purchase"
+      type: "currency"
+      calculation: "total_revenue / total_purchases"
+      max_degradation: -50 # -50 EGP
+      
+    - name: "page_load_time"
+      description: "Technical performance metric"
+      type: "duration"
+      calculation: "avg(dom_content_loaded_time)"
+      max_degradation: 100 # +100ms
+      
+  # Segmentation analysis
+  segments:
+    - name: "device_type"
+      values: ["desktop", "mobile", "tablet"]
+      
+    - name: "user_type"
+      values: ["new", "returning"]
+      
+    - name: "language"
+      values: ["ar", "en"]
+      
+    - name: "product_price_range"
+      values: ["0-10000", "10000-20000", "20000+"]
+      
+    - name: "time_of_day"
+      values: ["morning", "afternoon", "evening", "night"]
+
+# =====================================================
+# IMPLEMENTATION DETAILS
+# =====================================================
+
+implementation:
+  # Technical setup
+  feature_flags:
+    platform: "GrowthBook" # or LaunchDarkly, Split.io
+    flag_name: "cta_button_color_experiment"
+    targeting_rules:
+      - condition: "session_id % 100 < 50"
+        variant: "control"
+      - condition: "session_id % 100 >= 50"
+        variant: "treatment"
+        
+  # Code changes
+  frontend_changes:
+    files:
+      - "components/Button/Button.tsx"
+      - "styles/buttons.css"
+      - "utils/experimentUtils.ts"
+    css_classes:
+      - ".btn-primary-blue"
+      - ".btn-primary-orange"
+      
+  # Analytics tracking
+  events:
+    - event: "ab_test_exposure"
+      props: ["experiment_id", "variant_id", "timestamp"]
+    - event: "button_impression"
+      props: ["button_type", "variant_id", "page_context"]
+    - event: "button_click"
+      props: ["button_type", "variant_id", "page_context"]
+    - event: "add_to_cart"
+      props: ["product_id", "variant_id", "timestamp"]
+      
+  # Quality assurance
+  qa_checklist:
+    - "Visual regression testing across browsers"
+    - "Accessibility testing (color contrast, keyboard navigation)"
+    - "Mobile responsiveness verification"
+    - "Analytics event firing validation"
+    - "Feature flag toggle testing"
+    - "Performance impact assessment"
+
+# =====================================================
+# MONITORING & ALERTING
+# =====================================================
+
+monitoring:
+  # Real-time dashboards
+  dashboards:
+    - name: "Experiment Overview"
+      url: "https://analytics.hnlaptop.com/experiments/cta_button_color"
+      metrics: ["conversion_rate", "traffic_split", "statistical_significance"]
+      
+    - name: "Technical Health"
+      url: "https://monitoring.hnlaptop.com/experiments"
+      metrics: ["error_rate", "page_load_time", "feature_flag_latency"]
+      
+  # Automated alerts
+  alerts:
+    - name: "Conversion Rate Drop"
+      condition: "treatment_conversion_rate < control_conversion_rate * 0.9"
+      action: "email_stakeholders"
+      severity: "high"
+      
+    - name: "Traffic Imbalance"
+      condition: "abs(control_traffic - treatment_traffic) > 0.05"
+      action: "slack_notification"
+      severity: "medium"
+      
+    - name: "Error Rate Spike"
+      condition: "error_rate > baseline_error_rate * 1.5"
+      action: "pause_experiment"
+      severity: "critical"
+      
+  # Daily reports
+  reporting:
+    frequency: "daily"
+    recipients: ["experiment_owner", "data_team", "product_manager"]
+    content:
+      - "Traffic allocation summary"
+      - "Conversion rate trends"
+      - "Statistical significance status"
+      - "Guardrail metric health"
+
+# =====================================================
+# ANALYSIS PLAN
+# =====================================================
+
+analysis:
+  # Statistical tests
+  statistical_tests:
+    primary_metric:
+      test: "two_proportion_z_test"
+      confidence_level: 0.95
+      multiple_testing_correction: "bonferroni"
+      
+    secondary_metrics:
+      test: "welch_t_test"
+      confidence_level: 0.95
+      
+  # Analysis timeline
+  interim_analyses:
+    - day: 7
+      purpose: "Early safety check"
+      stopping_rules: "futility_only"
+      
+    - day: 14
+      purpose: "Mid-experiment review"
+      stopping_rules: "efficacy_and_futility"
+      
+  final_analysis:
+    day: 21
+    statistical_power_check: true
+    effect_size_estimation: true
+    confidence_intervals: true
+    
+  # Segmentation analysis
+  subgroup_analyses:
+    - segment: "device_type"
+      hypothesis: "Mobile users will show stronger preference for orange"
+      
+    - segment: "language"
+      hypothesis: "Arabic users will respond better to orange buttons"
+      
+    - segment: "product_price_range"
+      hypothesis: "Higher-priced products benefit more from orange CTAs"
+      
+  # Qualitative analysis
+  qualitative_research:
+    user_interviews:
+      sample_size: 10
+      recruitment: "experiment_participants"
+      questions:
+        - "Which button color felt more trustworthy?"
+        - "Which button made you more likely to take action?"
+        - "Any concerns about the button appearance?"
+        
+    heatmap_analysis:
+      tool: "Hotjar"
+      focus_areas: ["button_interactions", "scroll_behavior", "exit_patterns"]
+
+# =====================================================
+# SUCCESS CRITERIA & DECISION FRAMEWORK
+# =====================================================
+
+success_criteria:
+  # Launch criteria
+  launch_decision:
+    primary_metric_improvement: ">= 0.005" # 0.5 percentage points
+    statistical_significance: "p < 0.05"
+    practical_significance: "effect_size > 0.1"
+    guardrail_metrics: "no_degradation"
+    qualitative_feedback: "positive"
+    
+  # Rollback criteria
+  rollback_triggers:
+    - "Primary metric drops >10% vs control"
+    - "Any guardrail metric breaches threshold"
+    - "Technical issues affecting >5% of users"
+    - "Negative user feedback >20%"
+    
+  # Iteration criteria
+  iterate_if:
+    - "Positive trend but not statistically significant"
+    - "Strong performance in specific segments"
+    - "Qualitative insights suggest improvements"
+
+# =====================================================
+# POST-EXPERIMENT ACTIONS
+# =====================================================
+
+post_experiment:
+  # Documentation
+  results_documentation:
+    - "Statistical analysis report"
+    - "Segment performance breakdown"
+    - "Qualitative research summary"
+    - "Technical implementation learnings"
+    - "Business impact assessment"
+    
+  # Communication
+  stakeholder_communication:
+    - "Results presentation to leadership"
+    - "Design team knowledge sharing"
+    - "Engineering implementation guide"
+    - "Marketing team insights briefing"
+    
+  # Follow-up experiments
+  potential_iterations:
+    - name: "Button Size Optimization"
+      hypothesis: "Larger orange buttons will further improve conversion"
+      
+    - name: "Button Text Optimization"
+      hypothesis: "Action-oriented text will amplify color effect"
+      
+    - name: "Multi-CTA Color Testing"
+      hypothesis: "Different colors for different action types"
+      
+  # Implementation
+  winner_rollout:
+    rollout_percentage: 100
+    rollout_timeline: "7_days"
+    monitoring_period: "30_days"
+    documentation_update: "design_system_tokens"
+
+# =====================================================
+# COMPLIANCE & GOVERNANCE
+# =====================================================
+
+compliance:
+  # Privacy
+  data_privacy:
+    gdpr_compliant: true
+    user_consent_required: false # no PII collection
+    data_retention: "90_days"
+    anonymization: "session_level"
+    
+  # Ethics
+  ethical_considerations:
+    no_dark_patterns: true
+    transparent_testing: true
+    user_harm_assessment: "low_risk"
+    bias_considerations: "color_accessibility_checked"
+    
+  # Legal
+  legal_review:
+    required: false
+    reviewer: "legal_team@hnlaptop.com"
+    approval_date: null
+    concerns: "none"
+
+# =====================================================
+# RESOURCE REQUIREMENTS
+# =====================================================
+
+resources:
+  # Team allocation
+  team_effort:
+    product_manager: "2_days"
+    ux_designer: "1_day"
+    frontend_developer: "3_days"
+    data_analyst: "4_days"
+    qa_engineer: "2_days"
+    
+  # Infrastructure
+  technical_requirements:
+    feature_flag_platform: "GrowthBook"
+    analytics_tracking: "Google Analytics 4 + BigQuery"
+    monitoring_tools: "Datadog + Grafana"
+    estimated_cost: "500_USD"
+    
+  # Timeline
+  project_timeline:
+    design_phase: "2_days"
+    development_phase: "5_days"
+    qa_testing: "3_days"
+    experiment_runtime: "21_days"
+    analysis_phase: "3_days"
+    total_duration: "34_days"
+
+---
+# Owner: Product Manager + Data Analyst
+# Est. Effort: 5 person-days
+# Acceptance Criteria:
+# - Complete A/B test specification covers all aspects of experimentation
+# - Statistical calculations are mathematically correct and validated
+# - Implementation details are technically feasible and documented
+# - Success criteria and decision framework are clearly defined
+# - Compliance and ethical considerations are thoroughly addressed
+# - Resource requirements and timeline are realistic and achievable

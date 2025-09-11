@@ -1,0 +1,792 @@
+{
+  "events": [
+    {
+      "name": "page_view",
+      "description": "User views a page",
+      "props": [
+        "page_type",
+        "page_id", 
+        "language",
+        "user_agent",
+        "referrer",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["page_type", "timestamp", "session_id"],
+      "example": {
+        "page_type": "homepage",
+        "page_id": "home",
+        "language": "ar",
+        "timestamp": "2025-01-15T10:30:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "product_view",
+      "description": "User views a product detail page",
+      "props": [
+        "product_id",
+        "product_name",
+        "brand",
+        "category",
+        "subcategory",
+        "price",
+        "currency",
+        "variant",
+        "position",
+        "list_name",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "price", "currency", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_dell_123",
+        "product_name": "Dell Inspiron 15 3000",
+        "brand": "Dell",
+        "category": "Laptops",
+        "subcategory": "Budget Laptops",
+        "price": 15999,
+        "currency": "EGP",
+        "timestamp": "2025-01-15T10:35:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "impression",
+      "description": "Product appears in user's viewport",
+      "props": [
+        "product_id",
+        "product_name",
+        "brand",
+        "category", 
+        "price",
+        "currency",
+        "list_name",
+        "position",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "list_name", "position", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_hp_456",
+        "list_name": "homepage_featured",
+        "position": 2,
+        "timestamp": "2025-01-15T10:32:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "add_to_cart",
+      "description": "User adds product to shopping cart",
+      "props": [
+        "product_id",
+        "product_name",
+        "brand",
+        "category",
+        "price",
+        "currency",
+        "quantity",
+        "variant",
+        "cart_total_items",
+        "cart_total_value",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "price", "currency", "quantity", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_dell_123",
+        "price": 15999,
+        "currency": "EGP",
+        "quantity": 1,
+        "cart_total_items": 3,
+        "cart_total_value": 45997,
+        "timestamp": "2025-01-15T10:40:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "remove_from_cart",
+      "description": "User removes product from shopping cart",
+      "props": [
+        "product_id",
+        "product_name",
+        "quantity_removed",
+        "price",
+        "currency",
+        "cart_total_items",
+        "cart_total_value",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "quantity_removed", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_dell_123",
+        "quantity_removed": 1,
+        "price": 15999,
+        "currency": "EGP",
+        "cart_total_items": 2,
+        "cart_total_value": 29998,
+        "timestamp": "2025-01-15T10:45:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "begin_checkout",
+      "description": "User starts the checkout process",
+      "props": [
+        "cart_value",
+        "cart_items_count",
+        "currency",
+        "shipping_method",
+        "payment_method",
+        "discount_code",
+        "discount_amount",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["cart_value", "cart_items_count", "currency", "timestamp", "session_id"],
+      "example": {
+        "cart_value": 29998,
+        "cart_items_count": 2,
+        "currency": "EGP",
+        "timestamp": "2025-01-15T10:50:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "checkout_progress",
+      "description": "User progresses through checkout steps",
+      "props": [
+        "checkout_step",
+        "step_number",
+        "total_steps",
+        "cart_value",
+        "currency",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["checkout_step", "step_number", "timestamp", "session_id"],
+      "example": {
+        "checkout_step": "shipping_info",
+        "step_number": 2,
+        "total_steps": 4,
+        "cart_value": 29998,
+        "currency": "EGP",
+        "timestamp": "2025-01-15T10:52:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "payment_info",
+      "description": "User enters payment information",
+      "props": [
+        "payment_method",
+        "card_type",
+        "installments",
+        "cart_value",
+        "currency",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["payment_method", "timestamp", "session_id"],
+      "example": {
+        "payment_method": "credit_card",
+        "card_type": "visa",
+        "installments": 6,
+        "cart_value": 29998,
+        "currency": "EGP",
+        "timestamp": "2025-01-15T10:55:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "purchase",
+      "description": "User completes a purchase",
+      "props": [
+        "order_id",
+        "revenue",
+        "currency",
+        "items_count",
+        "payment_method",
+        "shipping_method",
+        "discount_code",
+        "discount_amount",
+        "tax_amount",
+        "shipping_cost",
+        "products",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["order_id", "revenue", "currency", "items_count", "payment_method", "timestamp", "session_id"],
+      "example": {
+        "order_id": "ORD_2025_001234",
+        "revenue": 32998,
+        "currency": "EGP",
+        "items_count": 2,
+        "payment_method": "credit_card",
+        "shipping_method": "standard",
+        "tax_amount": 3000,
+        "shipping_cost": 0,
+        "timestamp": "2025-01-15T11:00:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "search",
+      "description": "User performs a search",
+      "props": [
+        "query",
+        "results_count",
+        "search_type",
+        "filters_applied",
+        "sort_order",
+        "language",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["query", "results_count", "timestamp", "session_id"],
+      "example": {
+        "query": "Dell laptop 16GB RAM",
+        "results_count": 24,
+        "search_type": "text",
+        "filters_applied": ["brand:Dell", "memory:16GB"],
+        "sort_order": "price_asc",
+        "language": "ar",
+        "timestamp": "2025-01-15T10:25:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "filter_applied",
+      "description": "User applies a filter to search results",
+      "props": [
+        "filter_type",
+        "filter_value",
+        "previous_results_count",
+        "new_results_count",
+        "active_filters",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["filter_type", "filter_value", "new_results_count", "timestamp", "session_id"],
+      "example": {
+        "filter_type": "brand",
+        "filter_value": "HP",
+        "previous_results_count": 150,
+        "new_results_count": 45,
+        "active_filters": ["brand:HP", "price_range:10000-20000"],
+        "timestamp": "2025-01-15T10:28:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "sort_changed",
+      "description": "User changes sort order of results",
+      "props": [
+        "sort_type",
+        "previous_sort",
+        "results_count",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["sort_type", "timestamp", "session_id"],
+      "example": {
+        "sort_type": "price_desc",
+        "previous_sort": "relevance",
+        "results_count": 45,
+        "timestamp": "2025-01-15T10:29:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "signup",
+      "description": "User creates a new account",
+      "props": [
+        "user_id_pseudonym",
+        "method",
+        "marketing_consent",
+        "newsletter_consent",
+        "timestamp",
+        "session_id"
+      ],
+      "required_props": ["user_id_pseudonym", "method", "timestamp", "session_id"],
+      "example": {
+        "user_id_pseudonym": "user_hash_abc123",
+        "method": "email",
+        "marketing_consent": false,
+        "newsletter_consent": true,
+        "timestamp": "2025-01-15T09:15:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "login",
+      "description": "User logs into their account",
+      "props": [
+        "user_id_pseudonym",
+        "method",
+        "remember_me",
+        "timestamp",
+        "session_id"
+      ],
+      "required_props": ["user_id_pseudonym", "method", "timestamp", "session_id"],
+      "example": {
+        "user_id_pseudonym": "user_hash_abc123",
+        "method": "email",
+        "remember_me": true,
+        "timestamp": "2025-01-15T09:20:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "logout",
+      "description": "User logs out of their account",
+      "props": [
+        "user_id_pseudonym",
+        "session_duration",
+        "timestamp",
+        "session_id"
+      ],
+      "required_props": ["user_id_pseudonym", "timestamp", "session_id"],
+      "example": {
+        "user_id_pseudonym": "user_hash_abc123",
+        "session_duration": 3600,
+        "timestamp": "2025-01-15T12:20:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "add_to_wishlist",
+      "description": "User adds product to wishlist",
+      "props": [
+        "product_id",
+        "product_name",
+        "brand",
+        "category",
+        "price",
+        "currency",
+        "wishlist_total_items",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_lenovo_789",
+        "product_name": "Lenovo ThinkPad E15",
+        "brand": "Lenovo",
+        "category": "Laptops",
+        "price": 22999,
+        "currency": "EGP",
+        "wishlist_total_items": 5,
+        "timestamp": "2025-01-15T10:38:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "remove_from_wishlist",
+      "description": "User removes product from wishlist",
+      "props": [
+        "product_id",
+        "wishlist_total_items",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_lenovo_789",
+        "wishlist_total_items": 4,
+        "timestamp": "2025-01-15T10:42:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "promo_applied",
+      "description": "User applies a promotional code",
+      "props": [
+        "promo_code",
+        "discount_type",
+        "discount_amount",
+        "discount_percentage",
+        "cart_value_before",
+        "cart_value_after",
+        "currency",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["promo_code", "discount_amount", "timestamp", "session_id"],
+      "example": {
+        "promo_code": "SAVE20",
+        "discount_type": "percentage",
+        "discount_amount": 5999,
+        "discount_percentage": 20,
+        "cart_value_before": 29998,
+        "cart_value_after": 23999,
+        "currency": "EGP",
+        "timestamp": "2025-01-15T10:48:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "recommendation_view",
+      "description": "User views personalized recommendations",
+      "props": [
+        "recommendation_type",
+        "algorithm_version",
+        "products_shown",
+        "position",
+        "page_context",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["recommendation_type", "products_shown", "timestamp", "session_id"],
+      "example": {
+        "recommendation_type": "similar_products",
+        "algorithm_version": "v2.1",
+        "products_shown": ["laptop_dell_123", "laptop_hp_456"],
+        "position": "product_detail_bottom",
+        "page_context": "product_detail",
+        "timestamp": "2025-01-15T10:36:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "recommendation_click",
+      "description": "User clicks on a recommended product",
+      "props": [
+        "product_id",
+        "recommendation_type",
+        "algorithm_version",
+        "position",
+        "page_context",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "recommendation_type", "position", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_hp_456",
+        "recommendation_type": "similar_products",
+        "algorithm_version": "v2.1",
+        "position": 1,
+        "page_context": "product_detail",
+        "timestamp": "2025-01-15T10:37:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "consent_granted",
+      "description": "User grants consent for data processing",
+      "props": [
+        "consent_type",
+        "consent_categories",
+        "consent_version",
+        "granular_choices",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["consent_type", "consent_categories", "timestamp", "session_id"],
+      "example": {
+        "consent_type": "initial",
+        "consent_categories": ["analytics", "personalization"],
+        "consent_version": "v1.2",
+        "granular_choices": {
+          "analytics": true,
+          "personalization": true,
+          "marketing": false
+        },
+        "timestamp": "2025-01-15T09:10:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "consent_withdrawn",
+      "description": "User withdraws consent for data processing",
+      "props": [
+        "consent_type",
+        "consent_categories",
+        "previous_consent",
+        "reason",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["consent_type", "consent_categories", "timestamp", "session_id"],
+      "example": {
+        "consent_type": "withdrawal",
+        "consent_categories": ["personalization"],
+        "previous_consent": ["analytics", "personalization"],
+        "reason": "privacy_concern",
+        "timestamp": "2025-01-15T14:30:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "newsletter_signup",
+      "description": "User subscribes to newsletter",
+      "props": [
+        "email_hash",
+        "source",
+        "preferences",
+        "language",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["email_hash", "source", "timestamp", "session_id"],
+      "example": {
+        "email_hash": "hash_email_xyz789",
+        "source": "checkout_page",
+        "preferences": ["product_updates", "special_offers"],
+        "language": "ar",
+        "timestamp": "2025-01-15T10:58:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "review_write",
+      "description": "User writes a product review",
+      "props": [
+        "product_id",
+        "rating",
+        "review_length",
+        "has_photos",
+        "verified_purchase",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["product_id", "rating", "timestamp", "session_id"],
+      "example": {
+        "product_id": "laptop_dell_123",
+        "rating": 4,
+        "review_length": 156,
+        "has_photos": true,
+        "verified_purchase": true,
+        "timestamp": "2025-01-20T15:30:00Z",
+        "session_id": "sess_67890"
+      }
+    },
+    {
+      "name": "review_helpful",
+      "description": "User marks a review as helpful or not helpful",
+      "props": [
+        "review_id",
+        "product_id",
+        "helpful",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["review_id", "helpful", "timestamp", "session_id"],
+      "example": {
+        "review_id": "review_abc123",
+        "product_id": "laptop_dell_123",
+        "helpful": true,
+        "timestamp": "2025-01-15T10:41:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "chat_initiated",
+      "description": "User starts a chat conversation",
+      "props": [
+        "chat_type",
+        "department",
+        "initial_message_length",
+        "page_context",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["chat_type", "timestamp", "session_id"],
+      "example": {
+        "chat_type": "support",
+        "department": "technical_support",
+        "initial_message_length": 85,
+        "page_context": "product_detail",
+        "timestamp": "2025-01-15T11:15:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "scroll_depth",
+      "description": "User scrolls to specific depth on page",
+      "props": [
+        "page_type",
+        "scroll_percentage",
+        "max_scroll_reached",
+        "time_to_scroll",
+        "timestamp",
+        "session_id"
+      ],
+      "required_props": ["page_type", "scroll_percentage", "timestamp", "session_id"],
+      "example": {
+        "page_type": "product_detail",
+        "scroll_percentage": 75,
+        "max_scroll_reached": 85,
+        "time_to_scroll": 45,
+        "timestamp": "2025-01-15T10:37:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "time_on_page",
+      "description": "User spends time on a page before leaving",
+      "props": [
+        "page_type",
+        "page_id",
+        "time_spent",
+        "exit_method",
+        "next_page",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["page_type", "time_spent", "timestamp", "session_id"],
+      "example": {
+        "page_type": "product_detail",
+        "page_id": "laptop_dell_123",
+        "time_spent": 125,
+        "exit_method": "navigation",
+        "next_page": "cart",
+        "timestamp": "2025-01-15T10:42:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "error_occurred",
+      "description": "An error occurs during user interaction",
+      "props": [
+        "error_type",
+        "error_code",
+        "error_message",
+        "page_context",
+        "user_action",
+        "recovery_attempted",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["error_type", "error_code", "timestamp", "session_id"],
+      "example": {
+        "error_type": "payment_failed",
+        "error_code": "CARD_DECLINED",
+        "error_message": "Payment could not be processed",
+        "page_context": "checkout",
+        "user_action": "submit_payment",
+        "recovery_attempted": true,
+        "timestamp": "2025-01-15T10:56:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "form_abandonment",
+      "description": "User starts but doesn't complete a form",
+      "props": [
+        "form_type",
+        "fields_completed",
+        "total_fields",
+        "completion_percentage",
+        "last_field_interacted",
+        "time_spent",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["form_type", "completion_percentage", "timestamp", "session_id"],
+      "example": {
+        "form_type": "checkout",
+        "fields_completed": 6,
+        "total_fields": 12,
+        "completion_percentage": 50,
+        "last_field_interacted": "shipping_address",
+        "time_spent": 180,
+        "timestamp": "2025-01-15T10:53:00Z",
+        "session_id": "sess_12345"
+      }
+    },
+    {
+      "name": "ab_test_exposure",
+      "description": "User is exposed to an A/B test variant",
+      "props": [
+        "experiment_id",
+        "variant_id",
+        "experiment_name",
+        "feature_tested",
+        "timestamp",
+        "session_id",
+        "user_id_pseudonym"
+      ],
+      "required_props": ["experiment_id", "variant_id", "timestamp", "session_id"],
+      "example": {
+        "experiment_id": "exp_button_color_001",
+        "variant_id": "orange_button",
+        "experiment_name": "CTA Button Color Test",
+        "feature_tested": "add_to_cart_button",
+        "timestamp": "2025-01-15T10:30:00Z",
+        "session_id": "sess_12345"
+      }
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "last_updated": "2025-01-15",
+    "total_events": 30,
+    "privacy_compliant": true,
+    "gdpr_compliant": true,
+    "data_retention_days": 90,
+    "pseudonymization_required": [
+      "user_id_pseudonym",
+      "email_hash"
+    ],
+    "pii_fields": [],
+    "consent_required_events": [
+      "recommendation_view",
+      "recommendation_click",
+      "newsletter_signup"
+    ]
+  },
+  "data_governance": {
+    "retention_policy": {
+      "personal_events": "90_days",
+      "anonymous_events": "2_years", 
+      "aggregated_data": "indefinite"
+    },
+    "consent_requirements": {
+      "essential": ["page_view", "purchase", "error_occurred"],
+      "analytics": ["scroll_depth", "time_on_page", "form_abandonment"],
+      "personalization": ["recommendation_view", "recommendation_click"],
+      "marketing": ["newsletter_signup", "promo_applied"]
+    },
+    "data_minimization": {
+      "collect_only_necessary": true,
+      "pseudonymize_identifiers": true,
+      "no_sensitive_attributes": true
+    }
+  },
+  "implementation_notes": {
+    "event_validation": "All events must include required_props",
+    "timestamp_format": "ISO 8601 UTC",
+    "session_id_format": "sess_ + 8 random characters",
+    "user_id_pseudonym_format": "SHA-256 hash of actual user ID",
+    "currency_code": "ISO 4217 (EGP, USD, etc.)",
+    "price_format": "Integer in smallest currency unit (e.g., piasters for EGP)"
+  }
+}
