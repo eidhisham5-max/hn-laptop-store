@@ -87,11 +87,11 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
     const getConditionBadge = (condition: string) => {
       switch (condition) {
         case 'New':
-          return <Badge variant="success" size="sm">New</Badge>
+          return <Badge variant="success">New</Badge>
         case 'Refurbished':
-          return <Badge variant="warning" size="sm">Refurbished</Badge>
+          return <Badge variant="warning">Refurbished</Badge>
         case 'Used':
-          return <Badge variant="secondary" size="sm">Used</Badge>
+          return <Badge variant="secondary">Used</Badge>
         default:
           return null
       }
@@ -101,7 +101,6 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       return (
         <Card
           ref={ref}
-          variant="product"
           className={cn('group', className)}
           {...props}
         >
@@ -115,7 +114,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               {discount && discount > 0 && (
-                <Badge variant="error" size="sm" className="absolute top-2 left-2">
+                <Badge variant="error" className="absolute top-2 left-2 text-xs px-2 py-1">
                   -{discount}%
                 </Badge>
               )}
@@ -165,8 +164,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             {showQuickActions && (
               <div className="mt-3 flex gap-2">
                 <Button
-                  size="sm"
-                  className="flex-1"
+                  className="flex-1 text-sm px-3 py-2"
                   onClick={() => onAddToCart?.(id, 1)}
                   disabled={!inStock}
                 >
@@ -175,7 +173,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                 {onQuickView && (
                   <Button
                     variant="outline"
-                    size="sm"
+                    className="text-sm px-3 py-2"
                     onClick={() => onQuickView(id)}
                   >
                     Quick View
@@ -192,7 +190,6 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       return (
         <Card
           ref={ref}
-          variant="product"
           className={cn('group', className)}
           {...props}
         >
@@ -206,7 +203,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               {discount && discount > 0 && (
-                <Badge variant="error" size="sm" className="absolute top-3 left-3">
+                <Badge variant="error" className="absolute top-3 left-3 text-xs px-2 py-1">
                   -{discount}%
                 </Badge>
               )}
@@ -315,7 +312,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             {discount && discount > 0 && (
-              <Badge variant="error" size="sm" className="absolute top-2 left-2">
+              <Badge variant="error" className="absolute top-2 left-2 text-xs px-2 py-1">
                 -{discount}%
               </Badge>
             )}
