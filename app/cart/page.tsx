@@ -51,7 +51,7 @@ export default function CartPage() {
     }
 
     loadCartDetails()
-  }, [cartItems, showToast])
+  }, [cartItems])
 
   const updateQuantity = (productId: number, newQuantity: number) => {
     if (newQuantity <= 0) {

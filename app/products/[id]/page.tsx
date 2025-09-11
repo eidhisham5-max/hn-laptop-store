@@ -2,15 +2,15 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ProductGallery } from '../../../components/products/ProductGallery'
-import { ProductGrid } from '../../../components/products/ProductGrid'
-import { Button } from '../../../components/ui/Button'
-import { Badge } from '../../../components/ui/Badge'
-import { Tabs } from '../../../components/ui/Tabs'
-import { Accordion } from '../../../components/ui/Accordion'
-import { useToast } from '../../../components/ToastProvider'
-import { addToCart } from '../../../data/products'
-import { fetchProductById } from '../../../data/db'
+import { ProductGallery } from '../../components/products/ProductGallery'
+import { ProductGrid } from '../../components/products/ProductGrid'
+import { Button } from '../../components/ui/Button'
+import { Badge } from '../../components/ui/Badge'
+import { Tabs } from '../../components/ui/Tabs'
+import { Accordion } from '../../components/ui/Accordion'
+import { useToast } from '../../components/ToastProvider'
+import { addToCart } from '../../data/products'
+import { fetchProductById } from '../../data/db'
 
 export default function ProductDetailPage() {
   const params = useParams<{ id: string }>()
@@ -55,11 +55,11 @@ export default function ProductDetailPage() {
     try {
       // Add multiple quantities
       for (let i = 0; i < quantity; i++) {
-        await addToCart(product)
+        await addToCart(product.id)
       }
-      showToast('success', `${quantity} item(s) added to cart!`)
+      showToast(`${quantity} item(s) added to cart!`, 'success')
     } catch (error) {
-      showToast('error', 'Failed to add product to cart')
+      showToast('Failed to add product to cart', 'error')
     } finally {
       setAddingToCart(false)
     }

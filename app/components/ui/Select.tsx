@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useId } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
@@ -58,7 +58,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     id,
     ...props 
   }, ref) => {
-    const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`
+    const autoId = useId()
+    const selectId = id || autoId
     const selectVariant = error ? "error" : variant
     
     return (

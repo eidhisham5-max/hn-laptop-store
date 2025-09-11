@@ -140,7 +140,7 @@ export default function ProductsPage() {
 
   const handleAddToCart = async (product: any) => {
     try {
-      await addToCart(product)
+      await addToCart(product.id)
       showToast('Product added to cart!', 'success')
     } catch (error) {
       showToast('Failed to add product to cart', 'error')

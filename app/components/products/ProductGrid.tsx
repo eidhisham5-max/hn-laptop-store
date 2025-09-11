@@ -102,7 +102,6 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         <ProductCard
           key={product.id}
           product={product}
-          viewMode={viewMode}
           onClick={() => onProductClick?.(product)}
           onAddToCart={() => onAddToCart?.(product)}
         />

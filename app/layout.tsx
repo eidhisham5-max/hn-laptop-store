@@ -2,7 +2,8 @@ import React from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Header, Footer } from './components/layout'
+import { Header } from './components/layout/Header'
+import { Footer } from './components/layout/Footer'
 import { ToastProvider } from './components/ToastProvider'
 
 // Use Inter font for consistency with design system

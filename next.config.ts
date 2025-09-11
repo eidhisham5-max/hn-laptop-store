@@ -14,6 +14,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'logos-world.net',
+      },
+      {
+        protocol: 'https',
         hostname: 'whulchwxpwdoxemyovgg.supabase.co',
       }
     ],
@@ -62,21 +66,7 @@ const nextConfig: NextConfig = {
     ]
   },
   
-  // إعادة توجيه
-  async redirects() {
-    return [
-      {
-        source: '/products',
-        destination: '/#products',
-        permanent: true
-      },
-      {
-        source: '/brands',
-        destination: '/#brands',
-        permanent: true
-      }
-    ]
-  }
+  // لا نستخدم إعادة توجيه لمسارات الصفحات الرئيسية حتى لا تعطل الصفحات الفعلية
 };
 
 export default nextConfig;

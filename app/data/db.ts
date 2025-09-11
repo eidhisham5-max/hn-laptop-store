@@ -1,4 +1,5 @@
 import { supabase } from '../../supabaseClient'
+import { getProducts } from './products'
 
 export type DbBrand = { id: number; name: string; slug: string; created_at?: string }
 export type DbProductImage = { id: number; product_id: number; url: string; created_at?: string }
@@ -77,25 +78,46 @@ export async function fetchProducts(): Promise<(DbProduct & { images: string[]; 
 
 export async function fetchProductsByIds(ids: number[]): Promise<(DbProduct & { images: string[] })[]> {
   if (!ids.length) return []
-  const { data, error } = await supabase
-    .from('products')
-    .select('*, product_images(url)')
-    .in('id', ids)
-  if (error) throw error
-  return (data || []).map((row: any) => ({
-    id: row.id,
-    name: row.name,
-    brand_id: row.brand_id,
-    price: row.price,
-    original_price: row.original_price,
-    stock: row.stock,
-    condition: row.condition,
-    specs: row.specs,
-    description: row.description,
-    discount: row.discount,
-    status: row.status as 'Active' | 'Inactive',
-    images: (row.product_images || []).map((i: any) => i.url),
-  }))
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, product_images(url)')
+      .in('id', ids)
+    if (error) throw error
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      brand_id: row.brand_id,
+      price: row.price,
+      original_price: row.original_price,
+      stock: row.stock,
+      condition: row.condition,
+      specs: row.specs,
+      description: row.description,
+      discount: row.discount,
+      status: row.status as 'Active' | 'Inactive',
+      images: (row.product_images || []).map((i: any) => i.url),
+    }))
+  } catch (err) {
+    // Fallback: use local seed/storage products if Supabase is unavailable
+    const local = getProducts()
+      .filter(p => ids.includes(p.id))
+      .map(p => ({
+        id: p.id,
+        name: p.name,
+        brand_id: 0,
+        price: p.price,
+        original_price: p.originalPrice ?? null,
+        stock: p.stock,
+        condition: p.condition as any,
+        specs: p.specs,
+        description: p.description ?? null,
+        discount: p.discount ?? null,
+        status: 'Active' as const,
+        images: p.images ?? [],
+      }))
+    return local as any
+  }
 }
 
 export async function fetchProductById(id: number): Promise<(DbProduct & { images: string[]; brand?: DbBrand }) | null> {
@@ -185,20 +207,47 @@ export type CreateOrderInput = {
 
 export async function createOrder(input: CreateOrderInput): Promise<DbOrder> {
   const total = input.items.reduce((s, it) => s + it.price * it.qty, 0)
-  const { data: order, error: orderErr } = await supabase
-    .from('orders')
-    .insert({ customer_name: input.customer_name, phone: input.phone, address: input.address, total, status: 'Pending' })
-    .select('*')
-    .single()
-  if (orderErr) throw orderErr
+  try {
+    const { data: order, error: orderErr } = await supabase
+      .from('orders')
+      .insert({ customer_name: input.customer_name, phone: input.phone, address: input.address, total, status: 'Pending' })
+      .select('*')
+      .single()
+    if (orderErr) throw orderErr
 
-  if (input.items.length) {
-    const itemsRows = input.items.map(it => ({ order_id: order.id, product_id: it.product_id, qty: it.qty, price: it.price }))
-    const { error: itemsErr } = await supabase.from('order_items').insert(itemsRows)
-    if (itemsErr) throw itemsErr
+    if (input.items.length) {
+      const itemsRows = input.items.map(it => ({ order_id: order.id, product_id: it.product_id, qty: it.qty, price: it.price }))
+      const { error: itemsErr } = await supabase.from('order_items').insert(itemsRows)
+      if (itemsErr) throw itemsErr
+    }
+
+    return order as DbOrder
+  } catch (err) {
+    // Fallback to local storage order when Supabase is unavailable
+    if (typeof window !== 'undefined') {
+      try {
+        const raw = localStorage.getItem('hn_orders')
+        const orders = raw ? JSON.parse(raw) : []
+        const nextId = orders.length ? Math.max(...orders.map((o: any) => o.id)) + 1 : 1
+        const order: DbOrder = {
+          id: nextId,
+          customer_name: input.customer_name,
+          phone: input.phone,
+          address: input.address,
+          total,
+          status: 'Pending',
+          created_at: new Date().toISOString()
+        }
+        const items = input.items.map(it => ({ id: 0, order_id: nextId, product_id: it.product_id, qty: it.qty, price: it.price }))
+        orders.push({ ...order, items })
+        localStorage.setItem('hn_orders', JSON.stringify(orders))
+        return order
+      } catch (e) {
+        throw err
+      }
+    }
+    throw err
   }
-
-  return order as DbOrder
 }
 
 export async function fetchOrders(): Promise<(DbOrder & { items: (DbOrderItem & { product?: { id: number; name: string } })[] })[]> {

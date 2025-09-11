@@ -148,13 +148,13 @@ export default function Home() {
   ]
 
   const brands = [
-    { name: 'Dell', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Dell-Logo.png' },
-    { name: 'HP', logo: 'https://logos-world.net/wp-content/uploads/2020/09/HP-Logo.png' },
-    { name: 'Lenovo', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Lenovo-Logo.png' },
-    { name: 'ASUS', logo: 'https://logos-world.net/wp-content/uploads/2020/09/ASUS-Logo.png' },
-    { name: 'Acer', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Acer-Logo.png' },
-    { name: 'MSI', logo: 'https://logos-world.net/wp-content/uploads/2020/09/MSI-Logo.png' },
-    { name: 'Apple', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Apple-Logo.png' }
+    { name: 'Dell', logo: 'https://upload.wikimedia.org/wikipedia/commons/4/48/Dell_Logo.svg' },
+    { name: 'HP', logo: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/HP_logo_2012.svg' },
+    { name: 'Lenovo', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/0a/Lenovo_Logo_2015.svg' },
+    { name: 'ASUS', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/ASUS_Logo.svg' },
+    { name: 'Acer', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Acer_2011.svg' },
+    { name: 'MSI', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Micro-Star_International_logo.svg' },
+    { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' }
   ]
 
   const features = [

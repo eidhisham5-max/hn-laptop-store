@@ -13,13 +13,13 @@ export interface Product {
   price: number
   originalPrice?: number
   image: string
-  specs?: string
+  specs?: string | { processor?: string; memory?: string; storage?: string; display?: string }
   condition?: 'New' | 'Refurbished' | 'Used'
   rating?: number
   reviews?: number
   discount?: number
   inStock?: boolean
-  brand?: string
+  brand?: string | { name?: string }
 }
 
 export interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -55,7 +55,19 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       brand
     } = product
 
+    const specsText = typeof specs === 'string'
+      ? specs
+      : specs
+        ? [specs.processor, specs.memory, specs.storage, specs.display]
+            .filter(Boolean)
+            .join(' • ')
+        : ''
+
     const savings = originalPrice ? originalPrice - price : 0
+    const imageSrc = image && image.trim() !== ''
+      ? image
+      : 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg'
+    const brandText = typeof brand === 'string' ? brand : (brand && (brand as any).name) || ''
     const discountPercentage = originalPrice ? Math.round((savings / originalPrice) * 100) : 0
 
     const renderStars = (rating: number) => {
@@ -96,7 +108,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           <Link href={`/products/${id}`} className="block">
             <div className="relative aspect-square overflow-hidden">
               <Image
-                src={image}
+                src={imageSrc}
                 alt={name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -117,8 +129,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           
           <CardContent className="p-4">
             <div className="space-y-2">
-              {brand && (
-                <p className="text-xs text-gray-500 uppercase tracking-wide">{brand}</p>
+              {brandText && (
+                <p className="text-xs text-gray-500 uppercase tracking-wide">{brandText}</p>
               )}
               
               <Link href={`/products/${id}`}>
@@ -127,8 +139,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                 </h3>
               </Link>
               
-              {specs && (
-                <p className="text-xs text-gray-600 line-clamp-1">{specs}</p>
+              {specsText && (
+                <p className="text-xs text-gray-600 line-clamp-1">{specsText}</p>
               )}
               
               <div className="flex items-center gap-2">
@@ -187,7 +199,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           <Link href={`/products/${id}`} className="block">
             <div className="relative aspect-square overflow-hidden">
               <Image
-                src={image}
+                src={imageSrc}
                 alt={name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -208,8 +220,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
           
           <CardContent className="p-6">
             <div className="space-y-3">
-              {brand && (
-                <p className="text-sm text-gray-500 uppercase tracking-wide font-medium">{brand}</p>
+              {brandText && (
+                <p className="text-sm text-gray-500 uppercase tracking-wide font-medium">{brandText}</p>
               )}
               
               <Link href={`/products/${id}`}>
@@ -218,8 +230,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                 </h3>
               </Link>
               
-              {specs && (
-                <p className="text-sm text-gray-600 line-clamp-2">{specs}</p>
+              {specsText && (
+                <p className="text-sm text-gray-600 line-clamp-2">{specsText}</p>
               )}
               
               {rating && reviews && (
@@ -296,7 +308,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         <Link href={`/products/${id}`} className="block">
           <div className="relative aspect-square overflow-hidden">
             <Image
-              src={image}
+              src={imageSrc}
               alt={name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -317,8 +329,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         
         <CardContent className="p-5">
           <div className="space-y-3">
-            {brand && (
-              <p className="text-xs text-gray-500 uppercase tracking-wide">{brand}</p>
+            {brandText && (
+              <p className="text-xs text-gray-500 uppercase tracking-wide">{brandText}</p>
             )}
             
             <Link href={`/products/${id}`}>
@@ -327,8 +339,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
               </h3>
             </Link>
             
-            {specs && (
-              <p className="text-sm text-gray-600 line-clamp-2">{specs}</p>
+            {specsText && (
+              <p className="text-sm text-gray-600 line-clamp-2">{specsText}</p>
             )}
             
             {rating && reviews && (
