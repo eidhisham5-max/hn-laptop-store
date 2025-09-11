@@ -1,14 +1,12 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Inter, Poppins } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
-import Link from 'next/link'
-import CartBadge from './components/CartBadge'
+import { Header, Footer } from './components/layout'
 import { ToastProvider } from './components/ToastProvider'
 
-// Body font: Inter; Heading font: Poppins
+// Use Inter font for consistency with design system
 const inter = Inter({ subsets: ['latin'], variable: '--font-body' })
-const poppins = Poppins({ subsets: ['latin'], weight: ['400','600','700'], variable: '--font-heading' })
 
 export const metadata: Metadata = {
   title: 'H.N Laptop Store - Premium Laptops at Best Prices',
@@ -22,19 +20,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${poppins.variable} antialiased bg-white text-[#1D1D1F]`}>
+      <body className={`${inter.variable} antialiased bg-white text-gray-900`}>
+        {/* Skip to content link for keyboard users */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-primary-600 focus:text-white"
+        >
+          Skip to main content
+        </a>
         <ToastProvider>
-          <header className="sticky top-0 bg-white/90 backdrop-blur border-b z-40">
-            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-              <Link href="/" className="font-bold">H.N Laptop Store</Link>
-              <nav className="flex items-center gap-5 text-sm">
-                <Link href="/products">Products</Link>
-                <Link href="/orders">Track Order</Link>
-                <CartBadge />
-              </nav>
-            </div>
-          </header>
-          {children}
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main id="main-content" role="main" tabIndex={-1} className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
         </ToastProvider>
       </body>
     </html>

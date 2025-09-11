@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { supabase } from '../../../supabaseClient'
 import { fetchOrders, updateOrderStatus } from '../../data/db'
 
 export default function AdminOrdersPage() {
@@ -11,15 +12,14 @@ export default function AdminOrdersPage() {
   const [userEmail, setUserEmail] = useState('')
 
   useEffect(() => {
-    const userType = localStorage.getItem('userType')
-    const isLoggedIn = localStorage.getItem('isLoggedIn')
-    const email = localStorage.getItem('userEmail')
-    if (!isLoggedIn || userType !== 'admin') {
-      router.push('/login')
-      return
-    }
-    setUserEmail(email || '')
-    load()
+    (async () => {
+      const { data } = await supabase.auth.getSession()
+      const email = data.session?.user?.email
+      const allowed = email && (!process.env.NEXT_PUBLIC_ADMIN_EMAIL || email.toLowerCase() === process.env.NEXT_PUBLIC_ADMIN_EMAIL.toLowerCase())
+      if (!allowed) { router.push('/login'); return }
+      setUserEmail(email || '')
+      load()
+    })()
   }, [router])
 
   async function load() {
@@ -37,10 +37,8 @@ export default function AdminOrdersPage() {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o))
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('userType')
-    localStorage.removeItem('isLoggedIn')
-    localStorage.removeItem('userEmail')
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
     router.push('/login')
   }
 

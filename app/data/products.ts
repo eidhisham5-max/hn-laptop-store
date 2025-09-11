@@ -176,6 +176,9 @@ export function getCart(): CartItem[] {
 export function setCart(items: CartItem[]) {
   if (typeof window === "undefined") return;
   localStorage.setItem(CART_KEY, JSON.stringify(items));
+  try {
+    window.dispatchEvent(new CustomEvent('cart-changed'))
+  } catch {}
 }
 
 export function addToCart(productId: number, qty = 1) {

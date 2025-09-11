@@ -1,23 +1,27 @@
 # HN Laptop Store
 
-A modern e-commerce platform for selling laptops, built with Next.js 14, Supabase, and Tailwind CSS.
+A modern, production-ready e-commerce platform for selling laptops, built with Next.js 14, Supabase, and Tailwind CSS. Includes a complete Design System, admin dashboard, secure Paymob payments, E2E tests, and deployment tooling.
 
 ## Features
 
-- 🛒 **Product Catalog**: Browse laptops with advanced filtering and search
-- 🛍️ **Shopping Cart**: Add products to cart with real-time updates
-- 💳 **Order Management**: Complete checkout process with order tracking
-- 👨‍💼 **Admin Panel**: Manage products, orders, and inventory
-- 📱 **Responsive Design**: Mobile-first design with modern UI
-- 🔐 **Authentication**: Secure admin access (coming soon)
-- 🖼️ **Image Management**: Product images with gallery support
+- 🛒 **Product Catalog**: Listing, filters (brand/category/condition/price), search, grid/list view
+- 🛍️ **Cart & Checkout**: Add to cart, order summary, success page, order tracking
+- 💳 **Payments (Paymob)**: Initiation API, hosted iframe flow, HMAC webhook verification
+- 👨‍💼 **Admin Dashboard**: Products CRUD, orders management, basic analytics
+- 📱 **Responsive UI**: Desktop/Tablet/Mobile with polished components and micro-interactions
+- 🔐 **Auth**: Supabase Auth for session handling and admin access
+- 🖼️ **Images**: `next/image` with remote patterns and optimization
+- ✅ **Testing**: Playwright E2E smoke flow (home → product → cart → checkout)
+- 🚀 **Deployment**: Docker/Nginx, CI/CD, monitoring, backup/restore scripts
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Deployment**: Vercel (recommended)
+- **Frontend**: Next.js 14 (App Router), React 18, TypeScript
+- **Styling**: Tailwind CSS, Design Tokens, class-variance-authority
+- **Backend**: Supabase (Postgres, Auth, Storage)
+- **Payments**: Paymob Accept (Egypt)
+- **Testing**: Playwright
+- **Deployment**: Docker, Nginx, GitHub Actions
 
 ## Getting Started
 
@@ -45,11 +49,16 @@ A modern e-commerce platform for selling laptops, built with Next.js 14, Supabas
    cp env.example .env.local
    ```
    
-   Fill in your Supabase credentials in `.env.local`:
+   Fill in your Supabase and Paymob credentials in `.env.local`:
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+   NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
+   PAYMOB_API_KEY=your_paymob_api_key
+   PAYMOB_HMAC_SECRET=your_paymob_hmac_secret
+   PAYMOB_INTEGRATION_ID=your_paymob_integration_id
+   PAYMOB_IFRAME_ID=your_paymob_iframe_id
    ```
 
 4. **Set up the database**
@@ -71,7 +80,14 @@ A modern e-commerce platform for selling laptops, built with Next.js 14, Supabas
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
-- `npm run seed` - Seed database with sample data (coming soon)
+- `npm run type-check` - Run TypeScript check
+- `npm run analyze` - Analyze production bundle
+- `npm run test:e2e` - Run Playwright tests (headed)
+- `npm run e2e:headless` - Run Playwright tests headless
+- `npm run backup` / `npm run restore` - DB backup/restore helpers
+- `npm run health-check` - API health probe
+- `npm run build:production` - Build with analysis flags
+- `npm run deploy:check` - CI sanity checks
 
 ## Project Structure
 
@@ -87,7 +103,7 @@ hn-laptop-store/
 │   ├── orders/            # Customer order tracking
 │   └── products/          # Product pages
 ├── public/                # Static assets
-├── supabaseClient.js      # Supabase configuration
+├── supabaseClient.js      # Supabase configuration (consolidated)
 └── tailwind.config.js     # Tailwind configuration
 ```
 
@@ -100,6 +116,7 @@ The application uses the following main tables:
 - **product_images**: Product image URLs
 - **orders**: Customer orders
 - **order_items**: Individual items in each order
+ - Columns include pricing and `discount`. See `SUPABASE_SETUP.md` and `fix-database.sql`.
 
 ## Key Features
 
@@ -123,19 +140,15 @@ The application uses the following main tables:
 
 ## Deployment
 
-### Vercel (Recommended)
+### Vercel
 
-1. **Connect your repository to Vercel**
-2. **Set environment variables** in Vercel dashboard
-3. **Deploy** - Vercel will automatically build and deploy
+1. Connect repo and set environment variables
+2. Ensure image domains are configured in `next.config.ts`
+3. Deploy (auto build)
 
-### Other Platforms
+### Docker + Nginx (Production)
 
-The app can be deployed to any platform that supports Next.js:
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
+See `DEPLOYMENT.md`, `Dockerfile`, `docker-compose.yml`, and `nginx.conf` for a reverse proxy setup, HTTPS termination, and environment configuration. CI example in `.github/workflows/deploy.yml`.
 
 ## Environment Variables
 
@@ -144,8 +157,29 @@ The app can be deployed to any platform that supports Next.js:
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | Yes (for admin) |
-| `NEXT_PUBLIC_APP_URL` | Application URL | No |
-| `NEXT_PUBLIC_STORAGE_BUCKET` | Supabase storage bucket name | No |
+| `NEXT_PUBLIC_ADMIN_EMAIL` | Admin email for UI hints | No |
+| `PAYMOB_API_KEY` | Paymob API key | Yes (payments) |
+| `PAYMOB_HMAC_SECRET` | Paymob webhook HMAC secret | Yes (webhook) |
+| `PAYMOB_INTEGRATION_ID` | Paymob card integration ID | Yes (payments) |
+| `PAYMOB_IFRAME_ID` | Paymob iframe ID | Yes (payments) |
+
+## Testing & QA
+
+- E2E smoke: `npm run test:e2e` (requires dev server)
+- Accessibility: keyboard navigation, skip-link, roles/labels added; basic WCAG AA contrast via Tailwind tokens
+- Performance: code-splitting for product pages, debounce search, optimized images
+
+## Documentation Index
+
+- Design System: `DESIGN_SYSTEM.md`
+- Component Library: `COMPONENT_LIBRARY_GUIDE.md`
+- Wireframes: `DESIGN_WIREFRAMES.md`
+- Figma-text specs: `FIGMA_DESIGNS_OVERVIEW.md` and `designs/*`
+- Responsive notes: `RESPONSIVE_OPTIMIZATION.md`
+- Supabase setup: `SUPABASE_SETUP.md`
+- Database fixes: `fix-database.sql`
+- Deployment guide: `DEPLOYMENT.md`, `PRODUCTION_CHECKLIST.md`
+- Final report: `FINAL_REPORT.md`
 
 ## Contributing
 
@@ -165,9 +199,8 @@ For support, email support@hnlaptopstore.com or create an issue in the repositor
 
 ## Roadmap
 
-- [ ] User authentication and registration
-- [ ] Payment integration (Stripe/PayPal)
-- [ ] Advanced admin analytics
+- [ ] Social login providers
+- [ ] Deeper analytics & dashboards
 - [ ] Email notifications
 - [ ] Product reviews and ratings
 - [ ] Wishlist functionality

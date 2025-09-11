@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { supabase } from '../../supabaseClient'
 
 interface AdminGuardProps {
   children: React.ReactNode
@@ -10,21 +11,25 @@ interface AdminGuardProps {
 export default function AdminGuard({ children }: AdminGuardProps) {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
   const router = useRouter()
+  const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL
 
   useEffect(() => {
-    // Check if user is admin
-    const adminStatus = localStorage.getItem('isAdmin')
-    const userEmail = localStorage.getItem('userEmail')
-    
-    if (adminStatus === 'true' && userEmail) {
-      setIsAdmin(true)
-    } else {
-      setIsAdmin(false)
+    let mounted = true
+    async function check() {
+      try {
+        const { data } = await supabase.auth.getSession()
+        const email = data.session?.user?.email
+        const allowed = !!email && (!adminEmail || email.toLowerCase() === adminEmail.toLowerCase())
+        if (mounted) setIsAdmin(allowed)
+      } catch {
+        if (mounted) setIsAdmin(false)
+      }
     }
-  }, [])
+    check()
+    return () => { mounted = false }
+  }, [adminEmail])
 
   if (isAdmin === null) {
-    // Loading state
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-gray-200 border-t-[#007AFF] rounded-full animate-spin"></div>
@@ -33,7 +38,6 @@ export default function AdminGuard({ children }: AdminGuardProps) {
   }
 
   if (!isAdmin) {
-    // Not admin - show access denied
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center py-12 px-4">
         <div className="max-w-md w-full text-center">
@@ -44,7 +48,7 @@ export default function AdminGuard({ children }: AdminGuardProps) {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-red-800 mb-2">Access Denied</h1>
-            <p className="text-red-600 mb-6">You don't have permission to access the admin panel.</p>
+            <p className="text-red-600 mb-6">Sign in with an admin account to continue.</p>
             <div className="space-y-3">
               <Link
                 href="/login"

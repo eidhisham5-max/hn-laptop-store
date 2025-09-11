@@ -1,198 +1,306 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
-import Header from './components/Header'
+import { Button } from './components/ui/Button'
+import { ProductGrid } from './components/products/ProductGrid'
+import { Badge } from './components/ui/Badge'
+import { useToast } from './components/ToastProvider'
+import { addToCart } from './data/products'
 
 export default function Home() {
-  const [hoveredProduct, setHoveredProduct] = useState<number | null>(null)
+  const { showToast } = useToast()
+  const [featuredProducts, setFeaturedProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const featuredProducts = [
+  useEffect(() => {
+    // Simulate loading featured products
+    const loadProducts = async () => {
+      setLoading(true)
+      // In a real app, this would fetch from an API
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setFeaturedProducts([
+        {
+          id: '1',
+          name: 'Dell XPS 13',
+          price: 1200,
+          originalPrice: 1400,
+          image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop&auto=format',
+          brand: 'Dell',
+          condition: 'new',
+          rating: 4.8,
+          reviewCount: 124,
+          inStock: true,
+          stockCount: 12,
+          discount: 14,
+          specs: {
+            processor: 'Intel Core i7-1165G7',
+            memory: '16GB LPDDR4X RAM',
+            storage: '512GB PCIe NVMe SSD',
+            display: '13.4" FHD+ (1920x1200)'
+          }
+        },
+        {
+          id: '2',
+          name: 'HP Pavilion 15',
+          price: 800,
+          originalPrice: 950,
+          image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&h=600&fit=crop&auto=format',
+          brand: 'HP',
+          condition: 'refurbished',
+          rating: 4.6,
+          reviewCount: 89,
+          inStock: true,
+          stockCount: 8,
+          discount: 16,
+          specs: {
+            processor: 'AMD Ryzen 5 5500U',
+            memory: '8GB DDR4 RAM',
+            storage: '256GB PCIe NVMe SSD',
+            display: '15.6" FHD (1920x1080)'
+          }
+        },
+        {
+          id: '3',
+          name: 'Lenovo ThinkPad X1',
+          price: 1500,
+          originalPrice: 1800,
+          image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&h=600&fit=crop&auto=format',
+          brand: 'Lenovo',
+          condition: 'new',
+          rating: 4.9,
+          reviewCount: 203,
+          inStock: true,
+          stockCount: 5,
+          discount: 17,
+          specs: {
+            processor: 'Intel Core i7-1185G7',
+            memory: '32GB LPDDR4X RAM',
+            storage: '1TB PCIe NVMe SSD',
+            display: '14" WQHD (2560x1440)'
+          }
+        },
+        {
+          id: '4',
+          name: 'MacBook Air M2',
+          price: 1300,
+          originalPrice: 1500,
+          image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=600&fit=crop&auto=format',
+          brand: 'Apple',
+          condition: 'new',
+          rating: 4.9,
+          reviewCount: 156,
+          inStock: true,
+          stockCount: 20,
+          discount: 13,
+          specs: {
+            processor: 'Apple M2',
+            memory: '8GB Unified Memory',
+            storage: '256GB SSD',
+            display: '13.6" Liquid Retina (2560x1664)'
+          }
+        }
+      ])
+      setLoading(false)
+    }
+
+    loadProducts()
+  }, [])
+
+  const handleAddToCart = async (product: any) => {
+    try {
+      await addToCart(product)
+      showToast('Product added to cart!', 'success')
+    } catch (error) {
+      showToast('Failed to add product to cart', 'error')
+    }
+  }
+
+  const categories = [
     {
-      id: 1,
-      name: "Dell XPS 13",
-      price: "1,200",
-      originalPrice: "1,400",
-      image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop&auto=format",
-      specs: "Intel i7, 16GB RAM, 512GB SSD",
-      condition: "New",
-      rating: 4.8,
-      reviews: 124,
-      discount: 14
+      name: 'Gaming Laptops',
+      icon: '🎮',
+      description: 'High-performance laptops for gaming enthusiasts',
+      href: '/products?category=gaming',
+      image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=300&fit=crop&auto=format'
     },
     {
-      id: 2,
-      name: "HP Pavilion 15",
-      price: "800",
-      originalPrice: "950",
-      image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800&h=600&fit=crop&auto=format",
-      specs: "AMD Ryzen 5, 8GB RAM, 256GB SSD",
-      condition: "Refurbished",
-      rating: 4.6,
-      reviews: 89,
-      discount: 16
+      name: 'Business Laptops',
+      icon: '💼',
+      description: 'Professional laptops for work productivity',
+      href: '/products?category=business',
+      image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop&auto=format'
     },
     {
-      id: 3,
-      name: "Lenovo ThinkPad X1",
-      price: "1,500",
-      originalPrice: "1,800",
-      image: "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800&h=600&fit=crop&auto=format",
-      specs: "Intel i7, 32GB RAM, 1TB SSD",
-      condition: "New",
-      rating: 4.9,
-      reviews: 203,
-      discount: 17
+      name: 'Ultrabooks',
+      icon: '✨',
+      description: 'Lightweight and portable premium laptops',
+      href: '/products?category=ultrabook',
+      image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop&auto=format'
     },
     {
-      id: 4,
-      name: "Dell Inspiron 15",
-      price: "650",
-      originalPrice: "750",
-      image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800&h=600&fit=crop&auto=format",
-      specs: "Intel i5, 8GB RAM, 256GB SSD",
-      condition: "Refurbished",
-      rating: 4.5,
-      reviews: 67,
-      discount: 13
+      name: 'Everyday Laptops',
+      icon: '🏠',
+      description: 'Affordable laptops for daily use',
+      href: '/products?category=everyday',
+      image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop&auto=format'
+    }
+  ]
+
+  const brands = [
+    { name: 'Dell', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Dell-Logo.png' },
+    { name: 'HP', logo: 'https://logos-world.net/wp-content/uploads/2020/09/HP-Logo.png' },
+    { name: 'Lenovo', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Lenovo-Logo.png' },
+    { name: 'ASUS', logo: 'https://logos-world.net/wp-content/uploads/2020/09/ASUS-Logo.png' },
+    { name: 'Acer', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Acer-Logo.png' },
+    { name: 'MSI', logo: 'https://logos-world.net/wp-content/uploads/2020/09/MSI-Logo.png' },
+    { name: 'Apple', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Apple-Logo.png' }
+  ]
+
+  const features = [
+    {
+      icon: '✅',
+      title: 'Quality Guaranteed',
+      description: 'Every laptop undergoes rigorous testing and comes with comprehensive warranty support',
+      stat: '99.8% Quality Rate'
+    },
+    {
+      icon: '🚚',
+      title: 'Lightning Fast Delivery',
+      description: 'Free delivery across Egypt in 24-48 hours with real-time tracking support',
+      stat: '24-48 Hours'
+    },
+    {
+      icon: '💬',
+      title: '24/7 Expert Support',
+      description: 'WhatsApp support available anytime with our technical experts for all questions',
+      stat: '24/7 Available'
     }
   ]
 
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-28 pb-20 overflow-hidden">
-        {/* Background Photo */}
-        <div className="absolute inset-0">
-          <Image
-            src="https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop"
-            alt="Modern workspace"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-white/65"></div>
-        </div>
-
-        <div className="relative container mx-auto px-4 text-center">
-          <div className="max-w-5xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-[#1D1D1F]">
+      <section className="relative bg-gradient-to-br from-primary-50 to-primary-100 py-12 sm:py-16 lg:py-20 xl:py-32">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16 items-center">
+            <div className="space-y-6 lg:space-y-8 text-center lg:text-left">
+              <div className="space-y-3 lg:space-y-4">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
               Premium Laptops
-              <span className="block text-3xl md:text-4xl text-[#86868B] mt-3 font-normal">
-                At Unbeatable Prices
-              </span>
+                  <span className="block text-primary-600">At Unbeatable Prices</span>
             </h1>
-
-            <p className="text-lg md:text-xl mb-10 text-[#1D1D1F] max-w-4xl mx-auto leading-relaxed">
-              Discover our curated collection of new and refurbished laptops from top brands. Quality guaranteed with 2-year warranty and free delivery across Egypt.
-            </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <Link href="#products" className="btn-accent px-8 py-3 rounded-xl font-semibold text-base flex items-center gap-2">
-                <span>Browse Products</span>
-                <span>→</span>
+                <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                  Discover our curated collection of new and refurbished laptops from top brands. 
+                  Quality guaranteed with 2-year warranty and free delivery across Egypt.
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                <Link href="/products">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Browse Products
+                  </Button>
               </Link>
-              <button className="btn-outline-accent px-8 py-3 rounded-xl font-semibold text-base flex items-center gap-2">
-                <span>Get Free Quote</span>
-                <span>💬</span>
-              </button>
+                <Button 
+                  variant="secondary" 
+                  size="lg" 
+                  className="w-full sm:w-auto"
+                  onClick={() => window.open('https://wa.me/201000000000', '_blank')}
+                >
+                  Get Free Quote 💬
+                </Button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-600 justify-center lg:justify-start">
+                <div className="flex items-center gap-2">
+                  <span className="text-yellow-500">★★★★★</span>
+                  <span className="whitespace-nowrap">4.9/5 from 1,200+ reviews</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-green-500">🚚</span>
+                  <span className="whitespace-nowrap">Free Delivery 24-48h</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-blue-500">🔒</span>
+                  <span className="whitespace-nowrap">2-Year Warranty</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-6 text-[#86868B]">
-              <div className="text-sm"><span className="font-semibold text-[#1D1D1F]">4.9/5</span> from 1,200+ reviews</div>
-              <div className="hidden md:block w-px h-4 bg-gray-300"></div>
-              <div className="text-sm"><span className="font-semibold text-[#1D1D1F]">Free Delivery</span> in 24-48 hours</div>
-              <div className="hidden md:block w-px h-4 bg-gray-300"></div>
-              <div className="text-sm"><span className="font-semibold text-[#1D1D1F]">2-Year Warranty</span> on all products</div>
+            <div className="relative order-first lg:order-last">
+              <div className="relative z-10">
+                <Image
+                  src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop&auto=format"
+                  alt="Premium Laptop"
+                  width={600}
+                  height={400}
+                  className="rounded-2xl shadow-2xl w-full h-auto"
+                  priority
+                />
+              </div>
+              <div className="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-16 h-16 sm:w-24 sm:h-24 bg-primary-500 rounded-full opacity-20"></div>
+              <div className="absolute -bottom-2 -left-2 sm:-bottom-4 sm:-left-4 w-20 h-20 sm:w-32 sm:h-32 bg-secondary-500 rounded-full opacity-20"></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Brands Section */}
-      <section id="brands" className="py-16 bg-[#F5F7FA]">
+      {/* Trusted Brands Section */}
+      <section className="py-12 sm:py-16 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">Trusted by Leading Brands</h3>
-            <p className="text-base text-[#86868B]">We partner with the world's most reputable laptop manufacturers</p>
+          <div className="text-center space-y-3 sm:space-y-4 mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+              Trusted by Leading Brands
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              We partner with the world's most reputable manufacturers to bring you the best laptops
+            </p>
           </div>
 
-          <div className="flex items-center justify-center gap-10 md:gap-16">
-            {[
-              { name: 'Dell', href: '/brands/dell', src: 'https://upload.wikimedia.org/wikipedia/commons/4/48/Dell_Logo.svg' },
-              { name: 'HP', href: '/brands/hp', src: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/HP_logo_2012.svg' },
-              { name: 'Lenovo', href: '/brands/lenovo', src: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/Lenovo_logo_2015.svg' },
-              { name: 'ASUS', href: '/brands/asus', src: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/ASUS_Logo.svg' },
-              { name: 'Acer', href: '/brands/acer', src: 'https://upload.wikimedia.org/wikipedia/commons/5/58/Acer_2011.svg' }
-            ].map((brand) => (
-              <Link key={brand.name} href={brand.href} className="group block">
-                <div className="relative w-28 h-10 md:w-32 md:h-12 grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition">
-                  <Image src={brand.src} alt={`${brand.name} logo`} fill className="object-contain" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 sm:gap-6 lg:gap-8 items-center">
+            {brands.map((brand, index) => (
+              <div key={index} className="flex items-center justify-center p-2 sm:p-4 grayscale hover:grayscale-0 transition-all duration-300">
+                <Image
+                  src={brand.logo}
+                  alt={brand.name}
+                  width={120}
+                  height={60}
+                  className="max-h-8 sm:max-h-12 w-auto object-contain"
+                />
                 </div>
-              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-white">
+      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">Shop by Category</h3>
-            <p className="text-base text-[#86868B]">Find the perfect laptop for your specific needs</p>
+          <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+              Shop by Category
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              Find the perfect laptop for your specific needs
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                name: 'Gaming Laptops',
-                description: 'High-performance laptops for gaming enthusiasts',
-                icon: '🎮',
-                href: '/products?category=gaming',
-                gradient: 'from-red-500 to-pink-500'
-              },
-              {
-                name: 'Business Laptops',
-                description: 'Professional laptops for work and productivity',
-                icon: '💼',
-                href: '/products?category=business',
-                gradient: 'from-blue-500 to-indigo-500'
-              },
-              {
-                name: 'Ultrabooks',
-                description: 'Lightweight and portable premium laptops',
-                icon: '✨',
-                href: '/products?category=ultrabook',
-                gradient: 'from-purple-500 to-blue-500'
-              },
-              {
-                name: 'Everyday Laptops',
-                description: 'Affordable laptops for daily use',
-                icon: '🏠',
-                href: '/products?category=everyday',
-                gradient: 'from-green-500 to-teal-500'
-              }
-            ].map((category) => (
-              <Link key={category.name} href={category.href} className="group">
-                <div className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-5 group-hover:opacity-10 transition-opacity`}></div>
-                  <div className="relative p-8 text-center">
-                    <div className="text-4xl mb-4">{category.icon}</div>
-                    <h4 className="text-xl font-semibold mb-2 text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {categories.map((category, index) => (
+              <Link key={index} href={category.href}>
+                <div className="group bg-white rounded-2xl p-6 sm:p-8 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
+                  <div className="text-center space-y-3 sm:space-y-4">
+                    <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">{category.icon}</div>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
                       {category.name}
-                    </h4>
-                    <p className="text-sm text-[#86868B] leading-relaxed">
+                    </h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       {category.description}
                     </p>
-                    <div className="mt-4 inline-flex items-center text-[#007AFF] text-sm font-medium group-hover:gap-2 transition-all">
-                      <span>Explore</span>
-                      <span className="ml-1 group-hover:ml-0 transition-all">→</span>
-                    </div>
+                    <Button variant="outline" size="sm" className="mt-3 sm:mt-4">
+                      Explore →
+                    </Button>
                   </div>
                 </div>
               </Link>
@@ -201,136 +309,60 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section id="products" className="py-16 bg-[#F5F7FA]">
+      {/* Featured Products Section */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">
+          <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
               Hand-Picked Excellence
-            </h3>
-            <p className="text-base text-[#86868B] max-w-2xl mx-auto">
-              Discover our curated collection of premium laptops, selected for performance, reliability, and value.
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              Discover our curated collection of premium laptops, selected for performance, reliability, and value
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <div 
-                key={product.id} 
-                className="group bg-white rounded-2xl shadow-subtle border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer"
-                onMouseEnter={() => setHoveredProduct(product.id)}
-                onMouseLeave={() => setHoveredProduct(null)}
-              >
-                {/* Product Image */}
-                <Link href={`/products/${product.id}`} className="block">
-                  <div className="relative overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      width={800}
-                      height={600}
-                      className="w-full h-56 object-cover"
-                    />
-                  </div>
-                </Link>
-                
-                {/* Product Info */}
-                <div className="p-5">
-                  <Link href={`/products/${product.id}`} className="block">
-                    <h4 className="font-semibold text-lg mb-1 text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors">
-                      {product.name}
-                    </h4>
-                    <p className="text-sm text-[#86868B] mb-4 line-clamp-2">{product.specs}</p>
-                  </Link>
-
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={`text-sm ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-sm text-[#86868B]">({product.reviews})</span>
-                  </div>
-                  
-                  {/* Price */}
-                  <div className="flex items-center gap-3 mb-5">
-                    <span className="text-2xl font-bold text-[#007AFF]">${product.price}</span>
-                    <span className="text-sm text-gray-400 line-through">${product.originalPrice}</span>
-                    <span className="text-xs text-green-700 font-medium bg-green-100 px-2 py-1 rounded">
-                      Save ${parseInt(product.originalPrice) - parseInt(product.price)}
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-3">
-                    <button className="flex-1 btn-accent py-3 px-4 rounded-xl text-sm font-semibold">
-                      Add to Cart
-                    </button>
-                    <button className="bg-gray-100 text-gray-700 p-3 rounded-xl hover:bg-gray-200 transition-colors">
-                      <span className="text-lg">🛒</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
-            <Link href="/products" className="btn-outline-accent px-8 py-3 rounded-xl font-semibold text-base inline-block">
+          <ProductGrid
+            products={featuredProducts}
+            loading={loading}
+            columns={4}
+            onAddToCart={handleAddToCart}
+            onProductClick={(product) => window.location.href = `/products/${product.id}`}
+          />
+          
+          <div className="text-center mt-8 sm:mt-12">
+            <Link href="/products">
+              <Button size="lg" variant="secondary">
               View All Products
+              </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-16 bg-[#F5F7FA]">
+      {/* Why Choose Us Section */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl font-bold mb-2 text-[#1D1D1F]">
+          <div className="text-center space-y-3 sm:space-y-4 mb-12 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
               Your Trust is Our Foundation
-            </h3>
-            <p className="text-base text-[#86868B] max-w-2xl mx-auto">
-              We have built our reputation on delivering exceptional value, quality, and service to thousands of customers.
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              We have built our reputation on delivering exceptional value, quality, and service to thousands of customers
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: '✅',
-                title: 'Quality Guaranteed',
-                description: 'Every laptop undergoes rigorous testing and comes with comprehensive warranty support',
-                stats: '99.8% Quality Rate'
-              },
-              {
-                icon: '🚚',
-                title: 'Lightning Fast Delivery',
-                description: 'Free delivery across Egypt in 24-48 hours with real-time tracking support',
-                stats: '24-48 Hours'
-              },
-              {
-                icon: '💬',
-                title: '24/7 Expert Support',
-                description: 'WhatsApp support available anytime with our technical experts for all your questions',
-                stats: '24/7 Available'
-              }
-            ].map((feature, index) => (
-              <div key={index} className="group text-center p-8 rounded-2xl bg-white shadow-subtle border border-gray-100">
-                <div className="w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-5 text-3xl" style={{color: '#007AFF'}}>
-                  {feature.icon}
-                </div>
-                <h4 className="text-xl font-semibold mb-3 text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="text-center space-y-3 sm:space-y-4">
+                <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">{feature.icon}</div>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                   {feature.title}
-                </h4>
-                <p className="text-[#86868B] mb-4 leading-relaxed">
+                </h3>
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                   {feature.description}
                 </p>
-                <div className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-sm font-medium">
-                  <span className="w-2 h-2 rounded-full" style={{backgroundColor: '#007AFF'}}></span>
-                  {feature.stats}
+                <div className="text-xl sm:text-2xl font-bold text-primary-600">
+                  {feature.stat}
                 </div>
               </div>
             ))}
@@ -338,107 +370,34 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer id="contact" className="bg-[#1D1D1F] text-white">
-        <div className="container mx-auto px-4 py-14">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
-            {/* Company Info */}
-            <div className="md:col-span-1">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-[#007AFF] rounded-xl flex items-center justify-center text-white font-bold text-lg">
-                  HN
-                </div>
-                <div>
-                  <span className="font-bold text-xl">H.N Laptop Store</span>
-                  <p className="text-sm text-gray-300">Premium Laptops</p>
-                </div>
-              </div>
-              <p className="text-gray-400 mb-6 leading-relaxed">
-                Your trusted partner for premium laptops in Egypt. Quality guaranteed with comprehensive warranty support and exceptional customer service.
-              </p>
-              <div className="flex gap-4">
-                {[
-                  { name: 'Facebook', icon: '📘', color: 'hover:text-blue-400' },
-                  { name: 'Instagram', icon: '📷', color: 'hover:text-pink-400' },
-                  { name: 'WhatsApp', icon: '💬', color: 'hover:text-green-400' },
-                  { name: 'LinkedIn', icon: '💼', color: 'hover:text-blue-300' }
-                ].map((social) => (
-                  <button key={social.name} className={`text-gray-400 ${social.color} transition-colors p-2 rounded-lg hover:bg-white/10`}>
-                    <span className="text-xl">{social.icon}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h5 className="font-bold text-lg mb-6 text-white">Quick Links</h5>
-              <ul className="space-y-3">
-                {['Home', 'Products', 'Brands', 'About Us', 'Contact'].map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group">
-                      <span className="w-1 h-1 rounded-full transition-transform" style={{backgroundColor: '#007AFF'}}></span>
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Categories */}
-            <div>
-              <h5 className="font-bold text-lg mb-6 text-white">Categories</h5>
-              <ul className="space-y-3">
-                {[
-                  'Dell Laptops', 'HP Laptops', 'Lenovo Laptops', 
-                  'Refurbished', 'Gaming Laptops', 'Business Laptops'
-                ].map((category) => (
-                  <li key={category}>
-                    <a href="#" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2 group">
-                      <span className="w-1 h-1 rounded-full transition-transform" style={{backgroundColor: '#007AFF'}}></span>
-                      {category}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Contact */}
-            <div>
-              <h5 className="font-bold text-lg mb-6 text-white">Contact Info</h5>
-              <div className="space-y-4">
-                {[
-                  { icon: '📍', text: 'Cairo, Egypt', subtext: 'Main Office' },
-                  { icon: '📱', text: '+20 100 000 0000', subtext: 'WhatsApp Available' },
-                  { icon: '✉️', text: 'info@hnlaptop.com', subtext: '24/7 Support' },
-                  { icon: '🕒', text: '9 AM - 10 PM', subtext: 'Daily Support' }
-                ].map((contact, index) => (
-                  <div key={index} className="flex items-start gap-3 group">
-                    <span className="text-xl group-hover:scale-110 transition-transform">{contact.icon}</span>
-                    <div>
-                      <p className="text-white font-medium">{contact.text}</p>
-                      <p className="text-gray-400 text-sm">{contact.subtext}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-gray-400 text-center md:text-left">
-                &copy; 2024 H.N Laptop Store. All rights reserved. | Made with ❤️ in Egypt
-              </p>
-              <div className="flex gap-6 text-sm">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Refund Policy</a>
-              </div>
+      {/* CTA Section */}
+      <section className="py-12 sm:py-16 lg:py-20 bg-primary-600">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto space-y-6 sm:space-y-8">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+              Ready to Find Your Perfect Laptop?
+            </h2>
+            <p className="text-lg sm:text-xl text-primary-100">
+              Browse our extensive collection or get personalized recommendations from our experts
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+              <Link href="/products">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+                  Browse All Products
+                </Button>
+              </Link>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white hover:text-primary-600"
+                onClick={() => window.open('https://wa.me/201000000000', '_blank')}
+              >
+                Get Expert Advice
+              </Button>
             </div>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   )
 }

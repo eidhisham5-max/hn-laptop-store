@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { supabase } from '../../../supabaseClient'
 import Image from 'next/image'
 import { fetchProducts, deleteProduct, updateProduct } from '../../data/db'
 import AdminGuard from '../../components/AdminGuard'
@@ -37,22 +38,18 @@ export default function AdminProducts() {
 
   // التحقق من تسجيل الدخول
   useEffect(() => {
-    const userType = localStorage.getItem('userType')
-    const isLoggedIn = localStorage.getItem('isLoggedIn')
-    const email = localStorage.getItem('userEmail')
-    
-    if (!isLoggedIn || userType !== 'admin') {
-      router.push('/login')
-      return
-    }
-    setUserEmail(email || '')
-    loadProducts()
+    (async () => {
+      const { data } = await supabase.auth.getSession()
+      const email = data.session?.user?.email
+      const allowed = email && (!process.env.NEXT_PUBLIC_ADMIN_EMAIL || email.toLowerCase() === process.env.NEXT_PUBLIC_ADMIN_EMAIL.toLowerCase())
+      if (!allowed) { router.push('/login'); return }
+      setUserEmail(email || '')
+      loadProducts()
+    })()
   }, [router])
 
-  const handleLogout = () => {
-    localStorage.removeItem('userType')
-    localStorage.removeItem('isLoggedIn')
-    localStorage.removeItem('userEmail')
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
     router.push('/login')
   }
 
@@ -75,20 +72,6 @@ export default function AdminProducts() {
       } catch (error) {
         showToast('Failed to delete product', 'error')
       }
-    }
-  }
-
-  // تغيير حالة المنتج: تحديث عمود status في DB
-  const toggleProductStatus = async (id: number) => {
-    const found = products.find(p => p.id === id)
-    if (!found) return
-    const nextStatus = found.status === 'Active' ? 'Inactive' : 'Active'
-    try {
-      await updateProduct(id, { status: nextStatus as any })
-      setProducts(prev => prev.map(p => p.id === id ? { ...p, status: nextStatus } : p))
-      showToast(`Product ${nextStatus.toLowerCase()} successfully`, 'success')
-    } catch (error) {
-      showToast('Failed to update product status', 'error')
     }
   }
 
@@ -316,14 +299,22 @@ export default function AdminProducts() {
                     </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => alert(`Edit product: ${product.name}`)}
+                        <Link
+                          href={`/admin/products/${product.id}`}
                           className="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
                         >
                           Edit
-                        </button>
+                        </Link>
                         <button
-                          onClick={() => toggleProductStatus(product.id)}
+                          onClick={() => {
+                            const nextStatus = product.status === 'Active' ? 'Inactive' : 'Active'
+                            updateProduct(product.id, { status: nextStatus as any })
+                              .then(() => {
+                                setProducts(prev => prev.map(p => p.id === product.id ? { ...p, status: nextStatus } : p))
+                                showToast(`Product ${nextStatus.toLowerCase()} successfully`, 'success')
+                              })
+                              .catch(() => showToast('Failed to update product status', 'error'))
+                          }}
                           className={`px-3 py-1 text-xs rounded transition-colors ${
                             product.status === 'Active' 
                               ? 'bg-yellow-600 hover:bg-yellow-700' 

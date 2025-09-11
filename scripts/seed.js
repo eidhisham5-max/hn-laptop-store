@@ -192,53 +192,75 @@ async function seedDatabase() {
       brandMap[brand.name] = brand.id
     })
 
-    // 3. Insert products
-    console.log('💻 Inserting products...')
-    const productsWithBrandIds = sampleProducts.map(product => {
-      const { brand_name, ...productData } = product
-      return {
-        ...productData,
-        brand_id: brandMap[brand_name]
+    // 3. Upsert/update products by (name + brand)
+    console.log('💻 Upserting products...')
+    const insertedProducts = []
+    for (const p of sampleProducts) {
+      const brand_id = brandMap[p.brand_name]
+      const { data: existing, error: findErr } = await supabase
+        .from('products')
+        .select('id')
+        .eq('name', p.name)
+        .eq('brand_id', brand_id)
+        .maybeSingle()
+      if (findErr) { console.error('Find product error:', findErr); continue }
+
+      const productRow = {
+        name: p.name,
+        category: p.category,
+        price: p.price,
+        original_price: p.original_price,
+        stock: p.stock,
+        condition: p.condition,
+        specs: p.specs,
+        discount: p.discount,
+        status: p.status,
+        description: p.description,
+        brand_id,
       }
-    })
 
-    const { data: insertedProducts, error: productsError } = await supabase
-      .from('products')
-      .insert(productsWithBrandIds)
-      .select()
-
-    if (productsError) {
-      console.error('Error inserting products:', productsError)
-      return
+      if (existing) {
+        const { error: updErr } = await supabase
+          .from('products')
+          .update(productRow)
+          .eq('id', existing.id)
+        if (updErr) { console.error('Update product error:', updErr); continue }
+        insertedProducts.push({ id: existing.id, name: p.name })
+      } else {
+        const { data: ins, error: insErr } = await supabase
+          .from('products')
+          .insert(productRow)
+          .select('id')
+          .single()
+        if (insErr) { console.error('Insert product error:', insErr); continue }
+        insertedProducts.push({ id: ins.id, name: p.name })
+      }
     }
 
-    console.log(`✅ Inserted ${insertedProducts.length} products`)
+    console.log(`✅ Upserted ${insertedProducts.length} products`)
 
     // 4. Insert product images
     console.log('🖼️ Inserting product images...')
-    const imageInserts = []
-    
-    insertedProducts.forEach((product, index) => {
-      // Add 1-3 images per product
-      const numImages = Math.floor(Math.random() * 3) + 1
-      for (let i = 0; i < numImages; i++) {
-        imageInserts.push({
-          product_id: product.id,
-          url: sampleImages[index % sampleImages.length]
-        })
+    let imagesInserted = 0
+    for (let i = 0; i < insertedProducts.length; i++) {
+      const product = insertedProducts[i]
+      const { data: existingImgs, error: imgFindErr } = await supabase
+        .from('product_images')
+        .select('id')
+        .eq('product_id', product.id)
+        .limit(1)
+      if (imgFindErr) { console.error('Find images error:', imgFindErr); continue }
+      if (!existingImgs || existingImgs.length === 0) {
+        const url = sampleImages[i % sampleImages.length]
+        const { error: insImgErr } = await supabase
+          .from('product_images')
+          .insert({ product_id: product.id, url })
+        if (insImgErr) { console.error('Insert image error:', insImgErr); continue }
+        imagesInserted += 1
       }
-    })
-
-    const { error: imagesError } = await supabase
-      .from('product_images')
-      .insert(imageInserts)
-
-    if (imagesError) {
-      console.error('Error inserting images:', imagesError)
-      return
     }
 
-    console.log(`✅ Inserted ${imageInserts.length} product images`)
+    console.log(`✅ Ensured images; inserted ${imagesInserted} new product images`)
 
     // 5. Create sample orders
     console.log('📋 Creating sample orders...')

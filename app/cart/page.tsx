@@ -1,146 +1,364 @@
 'use client'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { Button } from '../components/ui/Button'
+import { Input } from '../components/ui/Input'
+import { Badge } from '../components/ui/Badge'
+import { EmptyCart } from '../components/ui/EmptyState'
+import { useToast } from '../components/ToastProvider'
 import { getCart, updateCartItem, clearCart } from '../data/products'
 import { fetchProductsByIds, createOrder } from '../data/db'
-import { useToast } from '../components/ToastProvider'
-import Header from '../components/Header'
 
 export default function CartPage() {
   const router = useRouter()
   const { showToast } = useToast()
-  const [items, setItems] = React.useState(getCart())
-  const [loading, setLoading] = React.useState(true)
-  const [detailed, setDetailed] = React.useState<any[]>([])
-  const [name, setName] = React.useState('')
-  const [phone, setPhone] = React.useState('')
-  const [address, setAddress] = React.useState('')
-  const [isPlacing, setIsPlacing] = React.useState(false)
+  
+  const [cartItems, setCartItems] = useState(getCart())
+  const [detailedItems, setDetailedItems] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false)
+  
+  // Customer details for COD
+  const [customerDetails, setCustomerDetails] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    postalCode: ''
+  })
 
-  React.useEffect(() => {
-    async function load() {
+  useEffect(() => {
+    const loadCartDetails = async () => {
       setLoading(true)
       try {
-        const ids = items.map(i => i.productId)
-        const products = await fetchProductsByIds(ids)
-        const joined = items.map(i => ({ ...i, product: products.find(p => p.id === i.productId) })).filter(i => i.product)
-        setDetailed(joined as any)
+        const productIds = cartItems.map(item => item.productId)
+        const products = await fetchProductsByIds(productIds)
+        
+        const detailed = cartItems.map(cartItem => {
+          const product = products.find(p => p.id === cartItem.productId)
+          return product ? { ...cartItem, product } : null
+        }).filter(Boolean)
+        
+        setDetailedItems(detailed)
+      } catch (error) {
+        console.error('Failed to load cart details', error)
+        showToast('Failed to load cart items', 'error')
       } finally {
         setLoading(false)
       }
     }
-    load()
-  }, [items])
 
-  const subtotal = detailed.reduce((sum, i) => sum + i.product.price * i.qty, 0)
+    loadCartDetails()
+  }, [cartItems, showToast])
 
-  const updateQty = (productId: number, qty: number) => {
-    updateCartItem(productId, qty)
-    setItems(getCart())
-    showToast('Cart updated successfully', 'success')
+  const updateQuantity = (productId: number, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      removeItem(productId)
+      return
+    }
+    
+    updateCartItem(productId, newQuantity)
+    setCartItems(getCart())
+      showToast('Cart updated successfully', 'success')
   }
 
   const removeItem = (productId: number) => {
     updateCartItem(productId, 0)
-    setItems(getCart())
+    setCartItems(getCart())
     showToast('Item removed from cart', 'info')
   }
 
-  const checkout = async () => {
-    if (!name || !phone || !address) { 
-      showToast('Please fill in all required fields', 'warning')
-      return 
+  const clearAllItems = () => {
+    clearCart()
+    setCartItems([])
+    showToast('Cart cleared', 'info')
+  }
+
+  const subtotal = detailedItems.reduce((sum, item) => sum + (item.product.price * item.qty), 0)
+  const shipping = subtotal > 1000 ? 0 : 50 // Free shipping over $1000
+  const tax = Math.round(subtotal * 0.14) // 14% tax
+  const total = subtotal + shipping + tax
+
+  const handlePlaceOrder = async () => {
+    if (detailedItems.length === 0) {
+      showToast('Your cart is empty', 'error')
+      return
     }
-    setIsPlacing(true)
+
+    if (!customerDetails.name || !customerDetails.phone || !customerDetails.address) {
+      showToast('Please fill in all required fields', 'error')
+      return
+    }
+
+    setIsPlacingOrder(true)
     try {
-      const order = await createOrder({
-        customer_name: name,
-        phone,
-        address,
-        items: detailed.map(i => ({ product_id: i.product.id, qty: i.qty, price: i.product.price }))
-      })
+      const orderData = {
+        customer_name: customerDetails.name,
+        customer_phone: customerDetails.phone,
+        customer_address: customerDetails.address,
+        customer_city: customerDetails.city,
+        customer_postal_code: customerDetails.postalCode,
+        items: detailedItems.map(item => ({
+          product_id: item.productId,
+          quantity: item.qty,
+          price: item.product.price
+        })),
+        subtotal,
+        shipping,
+        tax,
+        total,
+        payment_method: 'cod'
+      }
+
+      const order = await createOrder(orderData)
       clearCart()
-      setItems([])
-      setDetailed([])
+      setCartItems([])
+      
       showToast('Order placed successfully!', 'success')
       router.push(`/cart/success?orderId=${order.id}`)
-    } catch (e) {
+    } catch (error) {
+      console.error('Failed to place order', error)
       showToast('Failed to place order. Please try again.', 'error')
     } finally {
-      setIsPlacing(false)
+      setIsPlacingOrder(false)
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading cart...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (detailedItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-16">
+          <EmptyCart />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-white">
-      <Header />
-      <div className="container mx-auto px-4 py-10 pt-32">
-        <h1 className="text-3xl font-bold mb-6 text-[#1D1D1F]">Your Cart</h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <p className="text-gray-600 mt-2">{detailedItems.length} item(s) in your cart</p>
+        </div>
 
-        {loading ? (
-          <div className="text-[#86868B]">Loading cart...</div>
-        ) : detailed.length === 0 ? (
-          <div className="text-[#86868B]">
-            Cart is empty. <Link className="text-[#007AFF]" href="/products">Browse products</Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-4">
-              {detailed.map(({ product, qty }) => {
-                const img = product.images?.[0] || 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=1200&auto=format&fit=crop'
-                return (
-                  <div key={product.id} className="flex gap-4 p-4 border rounded-xl items-center">
-                    <div className="relative w-24 h-24 rounded-lg overflow-hidden">
-                      <Image src={img} alt={product.name} fill className="object-cover" />
-                    </div>
-                    <div className="flex-1">
-                      <Link href={`/products/${product.id}`} className="font-semibold text-[#1D1D1F] hover:text-[#007AFF]">{product.name}</Link>
-                      <p className="text-sm text-[#86868B]">{product.specs}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button className="px-3 py-1 border rounded-lg" onClick={()=>updateQty(product.id, Math.max(0, qty-1))}>-</button>
-                      <span className="w-8 text-center">{qty}</span>
-                      <button className="px-3 py-1 border rounded-lg" onClick={()=>updateQty(product.id, qty+1)}>+</button>
-                    </div>
-                    <div className="w-24 text-right font-semibold">${(product.price*qty).toFixed(2)}</div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Cart Items */}
+          <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
+            {detailedItems.map((item) => (
+              <div key={item.productId} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-start space-x-4">
+                  <div className="relative w-20 h-20 flex-shrink-0">
+                    <Image
+                      src={item.product.image || '/placeholder-laptop.jpg'}
+                      alt={item.product.name}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
                   </div>
-                )
-              })}
+                  
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      {item.product.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {item.product.specs}
+                    </p>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Badge variant={item.product.condition === 'new' ? 'success' : 'warning'}>
+                        {item.product.condition}
+                      </Badge>
+                      <span className="text-sm text-gray-500">
+                        {item.product.brand_name || item.product.brand?.name}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateQuantity(item.productId, item.qty - 1)}
+                        >
+                          -
+                        </Button>
+                        <span className="w-12 text-center font-medium">{item.qty}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => updateQuantity(item.productId, item.qty + 1)}
+                        >
+                          +
+                        </Button>
+                      </div>
+                      
+                      <div className="text-right">
+                        <div className="text-lg font-semibold text-gray-900">
+                          ${(item.product.price * item.qty).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ${item.product.price.toLocaleString()} each
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeItem(item.productId)}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </Button>
+                </div>
+              </div>
+            ))}
+            
+            <div className="flex justify-between items-center pt-4">
+              <Button
+                variant="outline"
+                onClick={clearAllItems}
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
+                Clear Cart
+              </Button>
+              <Link href="/products">
+                <Button variant="outline">
+                  Continue Shopping
+                </Button>
+              </Link>
             </div>
-            <div className="p-6 border rounded-xl h-fit">
-              <h2 className="font-semibold mb-4">Order Summary</h2>
-              <div className="flex justify-between mb-2 text-sm">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between mb-2 text-sm">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
-              <div className="flex justify-between font-semibold text-lg border-t pt-3 mt-3">
-                <span>Total</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
+          </div>
 
-              <div className="mt-6 space-y-3">
-                <input className="w-full px-3 py-2 border rounded-lg" placeholder="Full name" value={name} onChange={e=>setName(e.target.value)} />
-                <input className="w-full px-3 py-2 border rounded-lg" placeholder="Phone number" value={phone} onChange={e=>setPhone(e.target.value)} />
-                <textarea className="w-full px-3 py-2 border rounded-lg" placeholder="Delivery address" value={address} onChange={e=>setAddress(e.target.value)} rows={3} />
-                <button className="btn-accent w-full mt-2 py-3 rounded-xl font-semibold disabled:opacity-60" onClick={checkout} disabled={isPlacing}>
-                  {isPlacing ? 'Placing order...' : 'Checkout (Cash on Delivery)'}
-                </button>
-                <Link href="/payment" className="block w-full text-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all">
-                  Choose Payment Method
-                </Link>
+          {/* Order Summary */}
+          <div className="lg:col-span-1 order-1 lg:order-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 sticky top-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
+              
+              {/* Customer Details Form */}
+              <div className="space-y-4 mb-6">
+                <h3 className="text-lg font-medium text-gray-900">Customer Details</h3>
+                
+                <Input
+                  label="Full Name"
+                  placeholder="Enter your full name"
+                  value={customerDetails.name}
+                  onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
+                  required
+                />
+                
+                <Input
+                  label="Phone Number"
+                  placeholder="Enter your phone number"
+                  value={customerDetails.phone}
+                  onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
+                  required
+                />
+                
+                <Input
+                  label="Address"
+                  placeholder="Enter your address"
+                  value={customerDetails.address}
+                  onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
+                  required
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    label="City"
+                    placeholder="Cairo"
+                    value={customerDetails.city}
+                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, city: e.target.value }))}
+                  />
+                  
+                  <Input
+                    label="Postal Code"
+                    placeholder="11511"
+                    value={customerDetails.postalCode}
+                    onChange={(e) => setCustomerDetails(prev => ({ ...prev, postalCode: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              {/* Price Breakdown */}
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal ({detailedItems.length} items)</span>
+                  <span>${subtotal.toLocaleString()}</span>
+                </div>
+                
+                <div className="flex justify-between text-gray-600">
+                  <span>Shipping</span>
+                  <span>{shipping === 0 ? 'Free' : `$${shipping}`}</span>
+                </div>
+                
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax (14%)</span>
+                  <span>${tax.toLocaleString()}</span>
+                </div>
+                
+                <div className="border-t border-gray-200 pt-3">
+                  <div className="flex justify-between text-lg font-semibold text-gray-900">
+                    <span>Total</span>
+                    <span>${total.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                <Button
+                  size="lg"
+                  fullWidth
+                  onClick={handlePlaceOrder}
+                  loading={isPlacingOrder}
+                >
+                  Place Order (COD)
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="lg"
+                  fullWidth
+                  onClick={() => router.push('/payment')}
+                >
+                  Pay with Card
+                </Button>
+              </div>
+              
+              {/* Security Badges */}
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
+                  <div className="flex items-center space-x-1">
+                    <span className="text-green-500">🔒</span>
+                    <span>Secure checkout</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-blue-500">💳</span>
+                    <span>Multiple payment options</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )
 }
-
-

@@ -18,9 +18,11 @@ export default function CartBadge() {
     }
     update()
     const onStorage = (e: StorageEvent) => { if (e.key === key) update() }
+    const onCustom = () => update()
     window.addEventListener('storage', onStorage)
-    const interval = setInterval(update, 800)
-    return () => { window.removeEventListener('storage', onStorage); clearInterval(interval) }
+    window.addEventListener('cart-changed', onCustom as any)
+    const interval = setInterval(update, 1500)
+    return () => { window.removeEventListener('storage', onStorage); window.removeEventListener('cart-changed', onCustom as any); clearInterval(interval) }
   }, [])
 
   return (

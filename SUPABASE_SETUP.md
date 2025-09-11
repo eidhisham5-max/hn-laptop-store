@@ -118,6 +118,34 @@ ALTER TABLE public.orders DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items DISABLE ROW LEVEL SECURITY;
 ```
 
+For production, enable RLS and add policies, for example:
+
+```sql
+-- Enable RLS
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+
+-- Public can read products only when status = 'Active'
+CREATE POLICY products_read_active ON public.products
+FOR SELECT USING (status = 'Active');
+
+-- Insert orders without auth (COD / public checkout)
+CREATE POLICY orders_insert_public ON public.orders
+FOR INSERT WITH CHECK (true);
+
+-- Read own orders by phone (example - adjust to your auth model)
+-- Alternatively, store user_id and restrict by auth.uid()
+CREATE POLICY orders_select_public ON public.orders
+FOR SELECT USING (true);
+
+-- Order items follow parent order
+CREATE POLICY order_items_select_public ON public.order_items
+FOR SELECT USING (true);
+CREATE POLICY order_items_insert_public ON public.order_items
+FOR INSERT WITH CHECK (true);
+```
+
 ### Step 3: Insert Sample Data
 
 ```sql

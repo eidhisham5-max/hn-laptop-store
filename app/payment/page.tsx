@@ -1,28 +1,89 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Header from '../components/Header'
 import { useToast } from '../components/ToastProvider'
+import { getCart, clearCart } from '../data/products'
+import { fetchProductsByIds, createOrder } from '../data/db'
 
 export default function PaymentPage() {
   const router = useRouter()
   const { showToast } = useToast()
-  const [paymentMethod, setPaymentMethod] = useState('cod')
+  const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'bank'>('cod')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [items, setItems] = useState<{ productId: number; qty: number }[]>([])
+  const [detailed, setDetailed] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [address, setAddress] = useState('')
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      const cart = getCart()
+      setItems(cart)
+      try {
+        const ids = cart.map(i => i.productId)
+        const prods = await fetchProductsByIds(ids)
+        const joined = cart.map(i => ({ ...i, product: prods.find(p => p.id === i.productId) })).filter(i => i.product)
+        setDetailed(joined as any)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
+  const subtotal = useMemo(() => detailed.reduce((sum, i) => sum + i.product.price * i.qty, 0), [detailed])
 
   const handlePayment = async () => {
+    if (detailed.length === 0) {
+      showToast('Cart is empty', 'warning')
+      router.push('/cart')
+      return
+    }
+    if (!name || !phone || !address) {
+      showToast('Please fill in all required fields', 'warning')
+      return
+    }
     setIsProcessing(true)
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    showToast('Payment processed successfully!', 'success')
-    router.push('/cart/success')
+    try {
+      if (paymentMethod === 'card') {
+        const res = await fetch('/api/paymob/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_name: name,
+            phone,
+            address,
+            items: detailed.map(i => ({ product_id: i.product.id, qty: i.qty, price: i.product.price }))
+          })
+        })
+        if (!res.ok) throw new Error('Failed to initialize payment')
+        const data = await res.json()
+        // Do NOT clear cart yet; wait for webhook/confirmation
+        window.location.href = data.iframeUrl
+        return
+      } else {
+        const order = await createOrder({
+          customer_name: name,
+          phone,
+          address,
+          items: detailed.map(i => ({ product_id: i.product.id, qty: i.qty, price: i.product.price }))
+        })
+        clearCart()
+        showToast('Order placed successfully!', 'success')
+        router.push(`/cart/success?orderId=${order.id}`)
+      }
+    } catch (e) {
+      showToast('Failed to process payment. Please try again.', 'error')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <Header />
       <div className="container mx-auto px-4 py-10 pt-32">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
@@ -40,7 +101,7 @@ export default function PaymentPage() {
                     name="payment"
                     value="cod"
                     checked={paymentMethod === 'cod'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onChange={(e) => setPaymentMethod(e.target.value as any)}
                     className="w-5 h-5 text-[#007AFF] focus:ring-[#007AFF]"
                   />
                   <div className="ml-4 flex items-center gap-4">
@@ -61,7 +122,7 @@ export default function PaymentPage() {
                     name="payment"
                     value="card"
                     checked={paymentMethod === 'card'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onChange={(e) => setPaymentMethod(e.target.value as any)}
                     className="w-5 h-5 text-[#007AFF] focus:ring-[#007AFF]"
                   />
                   <div className="ml-4 flex items-center gap-4">
@@ -82,7 +143,7 @@ export default function PaymentPage() {
                     name="payment"
                     value="bank"
                     checked={paymentMethod === 'bank'}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onChange={(e) => setPaymentMethod(e.target.value as any)}
                     className="w-5 h-5 text-[#007AFF] focus:ring-[#007AFF]"
                   />
                   <div className="ml-4 flex items-center gap-4">
@@ -97,72 +158,45 @@ export default function PaymentPage() {
                 </label>
               </div>
 
-              {/* Payment Details */}
-              {paymentMethod === 'card' && (
-                <div className="space-y-4 p-4 bg-blue-50 rounded-xl">
-                  <h3 className="font-semibold text-blue-900">Card Details</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      placeholder="Card Number"
-                      className="px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Expiry Date"
-                      className="px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="CVV"
-                      className="px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Cardholder Name"
-                      className="px-4 py-3 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {paymentMethod === 'bank' && (
-                <div className="space-y-4 p-4 bg-purple-50 rounded-xl">
-                  <h3 className="font-semibold text-purple-900">Bank Transfer Details</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-purple-700">Bank:</span>
-                      <span className="font-semibold">National Bank of Egypt</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-purple-700">Account:</span>
-                      <span className="font-semibold">1234567890</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-purple-700">IBAN:</span>
-                      <span className="font-semibold">EG12345678901234567890</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Customer Info */}
+              <div className="grid grid-cols-1 gap-3">
+                <input className="w-full px-4 py-3 border rounded-lg" placeholder="Full name" value={name} onChange={e=>setName(e.target.value)} />
+                <input className="w-full px-4 py-3 border rounded-lg" placeholder="Phone number" value={phone} onChange={e=>setPhone(e.target.value)} />
+                <textarea className="w-full px-4 py-3 border rounded-lg" placeholder="Delivery address" value={address} onChange={e=>setAddress(e.target.value)} rows={3} />
+              </div>
 
               {/* Order Summary */}
               <div className="p-4 bg-gray-50 rounded-xl">
                 <h3 className="font-semibold text-gray-900 mb-3">Order Summary</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Subtotal:</span>
-                    <span>$1,200.00</span>
+                {loading ? (
+                  <div className="text-sm text-gray-600">Loading...</div>
+                ) : detailed.length === 0 ? (
+                  <div className="text-sm text-gray-600">Your cart is empty.</div>
+                ) : (
+                  <div className="space-y-2 text-sm">
+                    <div className="max-h-40 overflow-auto divide-y">
+                      {detailed.map(({ product, qty }) => (
+                        <div key={product.id} className="flex items-center justify-between py-1">
+                          <span className="text-gray-700">{product.name}</span>
+                          <span className="text-gray-500">x{qty}</span>
+                          <span className="font-medium">${(product.price * qty).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between pt-2">
+                      <span>Subtotal:</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Shipping:</span>
+                      <span className="text-green-600">Free</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                      <span>Total:</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Shipping:</span>
-                    <span className="text-green-600">Free</span>
-                  </div>
-                  <div className="flex justify-between font-semibold text-lg border-t pt-2">
-                    <span>Total:</span>
-                    <span>$1,200.00</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -184,7 +218,7 @@ export default function PaymentPage() {
                       Processing...
                     </div>
                   ) : (
-                    `Pay $1,200.00`
+                    paymentMethod === 'cod' ? 'Place Order (COD)' : `Pay ${subtotal.toFixed(2)}`
                   )}
                 </button>
               </div>

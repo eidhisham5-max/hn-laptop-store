@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation'
 import { fetchProducts } from '../../data/db'
 import { addToCart } from '../../data/products'
 import { useToast } from '../../components/ToastProvider'
-import Header from '../../components/Header'
 
 export default function BrandPage() {
   const params = useParams<{ brand: string }>()
@@ -45,7 +44,6 @@ export default function BrandPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <Header />
       <div className="container mx-auto px-4 py-10 pt-32">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1D1D1F] capitalize">{brand} Laptops</h1>

@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { supabase } from '../../../supabaseClient'
 import { fetchOrders, fetchProducts } from '../../data/db'
 
 interface AnalyticsData {
@@ -33,18 +34,13 @@ export default function AdminAnalytics() {
   const [timeRange, setTimeRange] = useState('30d')
 
   useEffect(() => {
-    // Check authentication
-    const isAdmin = localStorage.getItem('isAdmin') === 'true'
-    const userType = localStorage.getItem('userType')
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
-    const userEmail = localStorage.getItem('userEmail')
-
-    if (!((isAdmin || userType === 'admin') && isLoggedIn && userEmail)) {
-      router.push('/login')
-      return
-    }
-
-    loadAnalytics()
+    (async () => {
+      const { data } = await supabase.auth.getSession()
+      const email = data.session?.user?.email
+      const allowed = email && (!process.env.NEXT_PUBLIC_ADMIN_EMAIL || email.toLowerCase() === process.env.NEXT_PUBLIC_ADMIN_EMAIL.toLowerCase())
+      if (!allowed) { router.push('/login'); return }
+      loadAnalytics()
+    })()
   }, [router, timeRange])
 
   const loadAnalytics = async () => {
@@ -137,11 +133,8 @@ export default function AdminAnalytics() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem('isAdmin')
-    localStorage.removeItem('userType')
-    localStorage.removeItem('isLoggedIn')
-    localStorage.removeItem('userEmail')
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
     router.push('/')
   }
 
