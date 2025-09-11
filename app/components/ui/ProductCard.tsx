@@ -8,13 +8,13 @@ import { Badge } from './Badge'
 import { cn } from '../../lib/utils'
 
 export interface Product {
-  id: number
+  id: string
   name: string
   price: number
   originalPrice?: number
   image: string
   specs?: string | { processor?: string; memory?: string; storage?: string; display?: string }
-  condition?: 'New' | 'Refurbished' | 'Used'
+  condition?: 'new' | 'refurbished' | 'used' | 'New' | 'Refurbished' | 'Used'
   rating?: number
   reviews?: number
   discount?: number
@@ -24,8 +24,8 @@ export interface Product {
 
 export interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: Product
-  onAddToCart?: (productId: number, quantity?: number) => void
-  onQuickView?: (productId: number) => void
+  onAddToCart?: (productId: string, quantity?: number) => void
+  onQuickView?: (productId: string) => void
   showQuickActions?: boolean
   variant?: 'default' | 'compact' | 'detailed'
 }
@@ -85,12 +85,12 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
     }
 
     const getConditionBadge = (condition: string) => {
-      switch (condition) {
-        case 'New':
+      switch (condition.toLowerCase()) {
+        case 'new':
           return <Badge variant="success" size="sm">New</Badge>
-        case 'Refurbished':
+        case 'refurbished':
           return <Badge variant="warning" size="sm">Refurbished</Badge>
-        case 'Used':
+        case 'used':
           return <Badge variant="secondary" size="sm">Used</Badge>
         default:
           return null

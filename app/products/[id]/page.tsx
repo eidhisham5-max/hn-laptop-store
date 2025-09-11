@@ -337,7 +337,7 @@ export default function ProductDetailPage() {
                     <span className="text-xl text-gray-500 line-through">
                       ${product.original_price.toLocaleString()}
                     </span>
-                    <Badge variant="destructive">
+                    <Badge variant="error">
                       Save ${(product.original_price - product.price).toLocaleString()}
                     </Badge>
                   </>
