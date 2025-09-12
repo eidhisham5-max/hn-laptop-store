@@ -6,13 +6,13 @@ import { EmptyProducts } from '../ui/EmptyState'
 import { cn } from '../../lib/utils'
 
 export interface Product {
-  id: string
+  id: number
   name: string
   price: number
   originalPrice?: number
   image: string
   brand: string
-  condition: 'new' | 'refurbished' | 'used'
+  condition: 'New' | 'Refurbished' | 'Used'
   rating: number
   reviewCount: number
   inStock: boolean

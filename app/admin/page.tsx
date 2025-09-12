@@ -134,7 +134,7 @@ export default function AdminDashboard() {
       case 'pending': return 'warning'
       case 'completed': return 'success'
       case 'shipped': return 'info'
-      case 'cancelled': return 'destructive'
+      case 'cancelled': return 'error'
       default: return 'default'
     }
   }
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
   const getProductStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'success'
-      case 'out_of_stock': return 'destructive'
+      case 'out_of_stock': return 'error'
       case 'inactive': return 'default'
       default: return 'default'
     }
