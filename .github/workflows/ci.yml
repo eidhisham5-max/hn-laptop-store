@@ -43,10 +43,10 @@ jobs:
     - name: Build application
       run: npm run build
       env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
-        NEXT_PUBLIC_ADMIN_EMAIL: ${{ vars.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@example.com' }}
-        NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' }}
+        NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_key_for_ci
+        NEXT_PUBLIC_ADMIN_EMAIL: admin@example.com
+        NEXT_PUBLIC_APP_URL: http://localhost:3000
 
   e2e-test:
     name: End-to-End Tests
@@ -73,10 +73,10 @@ jobs:
     - name: Run E2E tests
       run: npm run e2e:headless
       env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key' }}
-        NEXT_PUBLIC_ADMIN_EMAIL: ${{ vars.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@example.com' }}
-        NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' }}
+        NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_key_for_ci
+        NEXT_PUBLIC_ADMIN_EMAIL: admin@example.com
+        NEXT_PUBLIC_APP_URL: http://localhost:3000
         
     - name: Upload E2E test results
       uses: actions/upload-artifact@v4
