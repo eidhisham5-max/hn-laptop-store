@@ -1,211 +1,272 @@
-# HN Laptop Store
+# H.N Laptop Store - متجر لابتوبات إلكتروني متكامل
 
-A modern, production-ready e-commerce platform for selling laptops, built with Next.js 14, Supabase, and Tailwind CSS. Includes a complete Design System, admin dashboard, secure Paymob payments, E2E tests, and deployment tooling.
+## نظرة عامة
 
-## Features
+H.N Laptop Store هو متجر إلكتروني متكامل ومتطور للابتوبات والملحقات التقنية، مصمم خصيصاً للسوق السعودي. يتميز المتجر بتصميم عصري، تجربة مستخدم متميزة، ونظام إدارة شامل.
 
-- 🛒 **Product Catalog**: Listing, filters (brand/category/condition/price), search, grid/list view
-- 🛍️ **Cart & Checkout**: Add to cart, order summary, success page, order tracking
-- 💳 **Payments (Paymob)**: Initiation API, hosted iframe flow, HMAC webhook verification
-- 👨‍💼 **Admin Dashboard**: Products CRUD, orders management, basic analytics
-- 📱 **Responsive UI**: Desktop/Tablet/Mobile with polished components and micro-interactions
-- 🔐 **Auth**: Supabase Auth for session handling and admin access
-- 🖼️ **Images**: `next/image` with remote patterns and optimization
-- ✅ **Testing**: Playwright E2E smoke flow (home → product → cart → checkout)
-- 🚀 **Deployment**: Docker/Nginx, CI/CD, monitoring, backup/restore scripts
+## المميزات الرئيسية
 
-## Tech Stack
+### 🎨 تصميم متطور
+- **نظام تصميم متكامل**: ألوان متناسقة، خطوط واضحة، وأيقونات احترافية
+- **تصميم متجاوب**: يعمل بشكل مثالي على جميع الأجهزة (سطح المكتب، التابلت، الهاتف)
+- **تجربة مستخدم متميزة**: واجهة بديهية وسهلة الاستخدام
+- **دعم اللغة العربية**: تصميم RTL متكامل مع دعم كامل للعربية
 
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript
-- **Styling**: Tailwind CSS, Design Tokens, class-variance-authority
-- **Backend**: Supabase (Postgres, Auth, Storage)
-- **Payments**: Paymob Accept (Egypt)
-- **Testing**: Playwright
-- **Deployment**: Docker, Nginx, GitHub Actions
+### 🛍️ تجربة تسوق متكاملة
+- **صفحة رئيسية جذابة**: عرض المنتجات المميزة والعروض الخاصة
+- **تصفح متقدم**: فلاتر ذكية وفرز متعدد الخيارات
+- **صفحات منتجات تفصيلية**: معرض صور، مواصفات كاملة، ومراجعات العملاء
+- **عربة تسوق ذكية**: إدارة سهلة للمنتجات مع حساب تلقائي للأسعار
+- **دفع آمن**: طرق دفع متعددة مع حماية عالية للأمان
 
-## Getting Started
+### 👤 إدارة المستخدمين
+- **نظام تسجيل متكامل**: تسجيل دخول وإنشاء حساب جديد
+- **ملف شخصي**: إدارة البيانات والمعلومات الشخصية
+- **تتبع الطلبات**: متابعة حالة الطلبات من البداية للنهاية
+- **قائمة المفضلة**: حفظ المنتجات المفضلة للمراجعة لاحقاً
 
-### Prerequisites
+### 🏪 لوحة تحكم المدير
+- **إحصائيات شاملة**: نظرة عامة على أداء المتجر والمبيعات
+- **إدارة المنتجات**: إضافة، تعديل، وحذف المنتجات بسهولة
+- **إدارة الطلبات**: متابعة ومعالجة جميع الطلبات
+- **إدارة العملاء**: عرض وإدارة بيانات العملاء
+- **تقارير مفصلة**: تحليلات مبيعات وأداء المتجر
 
-- Node.js 18+ 
-- npm or yarn
-- Supabase account
+## التقنيات المستخدمة
 
-### Installation
+### Frontend
+- **Next.js 14**: إطار عمل React متطور مع App Router
+- **TypeScript**: لكتابة كود آمن ومنظم
+- **Tailwind CSS**: للتصميم السريع والمتجاوب
+- **Framer Motion**: للحركات والانتقالات السلسة
+- **Lucide React**: مكتبة أيقونات حديثة وواضحة
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd hn-laptop-store
-   ```
+### UI Components
+- **Headless UI**: مكونات واجهة مستخدم قابلة للتخصيص
+- **React Hook Form**: إدارة النماذج بكفاءة
+- **React Hot Toast**: إشعارات جميلة وسريعة
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### Development Tools
+- **ESLint**: لفحص جودة الكود
+- **Prettier**: لتنسيق الكود تلقائياً
+- **PostCSS**: لمعالجة CSS
+- **Autoprefixer**: لإضافة البادئات التلقائية
 
-3. **Set up environment variables**
-   ```bash
-   cp env.example .env.local
-   ```
-   
-   Fill in your Supabase and Paymob credentials in `.env.local`:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-   PAYMOB_API_KEY=your_paymob_api_key
-   PAYMOB_HMAC_SECRET=your_paymob_hmac_secret
-   PAYMOB_INTEGRATION_ID=your_paymob_integration_id
-   PAYMOB_IFRAME_ID=your_paymob_iframe_id
-   ```
-
-4. **Set up the database**
-   
-   Follow the instructions in [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) to create the database schema and insert sample data.
-
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
-
-## Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript check
-- `npm run analyze` - Analyze production bundle
-- `npm run test:e2e` - Run Playwright tests (headed)
-- `npm run e2e:headless` - Run Playwright tests headless
-- `npm run backup` / `npm run restore` - DB backup/restore helpers
-- `npm run health-check` - API health probe
-- `npm run build:production` - Build with analysis flags
-- `npm run deploy:check` - CI sanity checks
-
-## Project Structure
+## هيكل المشروع
 
 ```
 hn-laptop-store/
-├── app/                    # Next.js app directory
-│   ├── admin/             # Admin panel pages
-│   │   ├── orders/        # Order management
-│   │   └── products/      # Product management
-│   ├── cart/              # Shopping cart pages
-│   ├── components/        # Reusable components
-│   ├── data/              # Data access layer
-│   ├── orders/            # Customer order tracking
-│   └── products/          # Product pages
-├── public/                # Static assets
-├── supabaseClient.js      # Supabase configuration (consolidated)
-└── tailwind.config.js     # Tailwind configuration
+├── app/                          # صفحات التطبيق (App Router)
+│   ├── auth/                     # صفحات المصادقة
+│   │   ├── login/               # تسجيل الدخول
+│   │   └── register/            # إنشاء حساب جديد
+│   ├── products/                # صفحات المنتجات
+│   │   ├── [id]/               # صفحة تفاصيل المنتج
+│   │   └── page.tsx            # قائمة المنتجات
+│   ├── cart/                   # عربة التسوق
+│   ├── checkout/               # صفحة الدفع
+│   ├── admin/                  # لوحة تحكم المدير
+│   ├── globals.css             # الأنماط العامة
+│   ├── layout.tsx              # تخطيط التطبيق الرئيسي
+│   └── page.tsx                # الصفحة الرئيسية
+├── components/                  # مكونات React
+│   ├── ui/                     # مكونات واجهة المستخدم الأساسية
+│   │   ├── Button.tsx          # مكون الزر
+│   │   ├── Input.tsx           # مكون حقل الإدخال
+│   │   ├── Card.tsx            # مكون البطاقة
+│   │   ├── Badge.tsx           # مكون الشارة
+│   │   ├── StarRating.tsx      # مكون تقييم النجوم
+│   │   └── TrustBadge.tsx      # مكون شارة الثقة
+│   ├── layout/                 # مكونات التخطيط
+│   │   ├── Header.tsx          # رأس الصفحة
+│   │   └── Footer.tsx          # تذييل الصفحة
+│   ├── home/                   # مكونات الصفحة الرئيسية
+│   │   ├── HeroSection.tsx     # قسم البطل
+│   │   ├── FeaturedProducts.tsx # المنتجات المميزة
+│   │   ├── CategoriesSection.tsx # قسم الفئات
+│   │   └── TrustSection.tsx    # قسم الثقة
+│   ├── products/               # مكونات المنتجات
+│   │   ├── ProductFilters.tsx  # فلاتر المنتجات
+│   │   └── ProductGrid.tsx     # شبكة المنتجات
+│   ├── product/                # مكونات تفاصيل المنتج
+│   │   ├── ProductGallery.tsx  # معرض صور المنتج
+│   │   ├── ProductInfo.tsx     # معلومات المنتج
+│   │   └── ProductTabs.tsx     # تبويبات المنتج
+│   ├── cart/                   # مكونات عربة التسوق
+│   │   ├── CartItem.tsx        # عنصر العربة
+│   │   └── CartSummary.tsx     # ملخص العربة
+│   ├── checkout/               # مكونات الدفع
+│   │   └── CheckoutForm.tsx    # نموذج الدفع
+│   └── admin/                  # مكونات لوحة التحكم
+│       ├── AdminSidebar.tsx    # الشريط الجانبي
+│       ├── StatsCards.tsx      # بطاقات الإحصائيات
+│       ├── RecentOrders.tsx    # الطلبات الأخيرة
+│       └── ProductTable.tsx    # جدول المنتجات
+├── lib/                        # مكتبات مساعدة
+│   └── utils.ts                # وظائف مساعدة
+├── public/                     # الملفات العامة
+├── tailwind.config.js          # إعدادات Tailwind CSS
+├── tsconfig.json               # إعدادات TypeScript
+├── next.config.js              # إعدادات Next.js
+├── package.json                # تبعيات المشروع
+└── README.md                   # هذا الملف
 ```
 
-## Database Schema
+## نظام التصميم
 
-The application uses the following main tables:
+### الألوان
+- **الأزرق التقني (#0052CC)**: اللون الأساسي للعلامة التجارية
+- **الأزرق السماوي (#6DD5FA)**: للتمييز والتدرجات
+- **الرمادي الداكن (#1A202C)**: للنصوص والعناوين
+- **الرمادي الفاتح (#F7FAFC)**: للخلفيات الثانوية
+- **الأخضر (#38A169)**: للنجاح والإيجابية
+- **الأحمر (#E53E3E)**: للأخطاء والتحذيرات
 
-- **brands**: Product brands (Apple, Dell, HP, etc.)
-- **products**: Product information and specifications
-- **product_images**: Product image URLs
-- **orders**: Customer orders
-- **order_items**: Individual items in each order
- - Columns include pricing and `discount`. See `SUPABASE_SETUP.md` and `fix-database.sql`.
+### الخطوط
+- **Inter**: للعناوين والنصوص الأساسية
+- **Poppins**: كخط احتياطي
 
-## Key Features
+### المكونات
+- **زوايا دائرية**: 12px للعناصر الصغيرة، 16px للكبيرة
+- **ظلال ناعمة**: لخلق عمق بصري
+- **انتقالات سلسة**: 200ms لجميع التفاعلات
 
-### Product Management
-- Add/edit/delete products
-- Upload product images
-- Manage product status (Active/Inactive)
-- Set pricing and discounts
+## التثبيت والتشغيل
 
-### Order Processing
-- Customer order placement
-- Order status tracking
-- Admin order management
-- Order history for customers
+### المتطلبات
+- Node.js 18.0 أو أحدث
+- npm أو yarn
 
-### Shopping Experience
-- Advanced product filtering
-- Search functionality
-- Shopping cart with real-time updates
-- Responsive product cards
+### خطوات التثبيت
 
-## Deployment
+1. **استنساخ المشروع**
+```bash
+git clone https://github.com/your-username/hn-laptop-store.git
+cd hn-laptop-store
+```
 
-### Vercel
+2. **تثبيت التبعيات**
+```bash
+npm install
+# أو
+yarn install
+```
 
-1. Connect repo and set environment variables
-2. Ensure image domains are configured in `next.config.ts`
-3. Deploy (auto build)
+3. **تشغيل المشروع في وضع التطوير**
+```bash
+npm run dev
+# أو
+yarn dev
+```
 
-### Docker + Nginx (Production)
+4. **فتح المتصفح**
+```
+http://localhost:3000
+```
 
-See `DEPLOYMENT.md`, `Dockerfile`, `docker-compose.yml`, and `nginx.conf` for a reverse proxy setup, HTTPS termination, and environment configuration. CI example in `.github/workflows/deploy.yml`.
+### أوامر البناء والنشر
 
-## Environment Variables
+```bash
+# بناء المشروع للإنتاج
+npm run build
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | Yes (for admin) |
-| `NEXT_PUBLIC_ADMIN_EMAIL` | Admin email for UI hints | No |
-| `PAYMOB_API_KEY` | Paymob API key | Yes (payments) |
-| `PAYMOB_HMAC_SECRET` | Paymob webhook HMAC secret | Yes (webhook) |
-| `PAYMOB_INTEGRATION_ID` | Paymob card integration ID | Yes (payments) |
-| `PAYMOB_IFRAME_ID` | Paymob iframe ID | Yes (payments) |
+# تشغيل المشروع المبني
+npm run start
 
-## Testing & QA
+# فحص الكود
+npm run lint
+```
 
-- E2E smoke: `npm run test:e2e` (requires dev server)
-- Accessibility: keyboard navigation, skip-link, roles/labels added; basic WCAG AA contrast via Tailwind tokens
-- Performance: code-splitting for product pages, debounce search, optimized images
+## الصفحات المتاحة
 
-## Documentation Index
+### صفحات العميل
+- **الصفحة الرئيسية** (`/`): عرض المنتجات المميزة والفئات
+- **قائمة المنتجات** (`/products`): تصفح جميع المنتجات مع الفلاتر
+- **تفاصيل المنتج** (`/products/[id]`): معلومات مفصلة عن المنتج
+- **عربة التسوق** (`/cart`): إدارة المنتجات المختارة
+- **صفحة الدفع** (`/checkout`): إتمام عملية الشراء
+- **تسجيل الدخول** (`/auth/login`): دخول المستخدمين
+- **إنشاء حساب** (`/auth/register`): تسجيل مستخدمين جدد
 
-- Design System: `DESIGN_SYSTEM.md`
-- Component Library: `COMPONENT_LIBRARY_GUIDE.md`
-- Wireframes: `DESIGN_WIREFRAMES.md`
-- Figma-text specs: `FIGMA_DESIGNS_OVERVIEW.md` and `designs/*`
-- Responsive notes: `RESPONSIVE_OPTIMIZATION.md`
-- Supabase setup: `SUPABASE_SETUP.md`
-- Database fixes: `fix-database.sql`
-- Deployment guide: `DEPLOYMENT.md`, `PRODUCTION_CHECKLIST.md`
-- Final report: `FINAL_REPORT.md`
+### صفحات المدير
+- **لوحة التحكم** (`/admin`): نظرة عامة على أداء المتجر
+- **إدارة المنتجات** (`/admin/products`): إضافة وتعديل المنتجات
+- **إدارة الطلبات** (`/admin/orders`): متابعة الطلبات
+- **إدارة العملاء** (`/admin/customers`): بيانات العملاء
+- **التقارير** (`/admin/reports`): تحليلات المبيعات
 
-## Contributing
+## المميزات التقنية
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### الأداء
+- **تحميل سريع**: تحسين الصور والكود
+- **SEO محسن**: عناوين ووصف مناسب لمحركات البحث
+- **PWA Ready**: جاهز للتطبيق التقدمي
 
-## License
+### الأمان
+- **حماية البيانات**: تشفير معلومات العملاء
+- **دفع آمن**: طرق دفع محمية
+- **مصادقة قوية**: نظام تسجيل دخول آمن
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### إمكانية الوصول
+- **دعم قارئات الشاشة**: للمستخدمين ذوي الإعاقة البصرية
+- **تنقل بلوحة المفاتيح**: سهولة التنقل
+- **تباين ألوان مناسب**: وضوح في العرض
 
-## Support
+## التخصيص والتطوير
 
-For support, email support@hnlaptopstore.com or create an issue in the repository.
+### إضافة منتجات جديدة
+1. انتقل إلى لوحة التحكم (`/admin`)
+2. اختر "إدارة المنتجات"
+3. اضغط "إضافة منتج جديد"
+4. املأ البيانات المطلوبة
 
-## Roadmap
+### تخصيص التصميم
+- عدّل الألوان في `tailwind.config.js`
+- غيّر الخطوط في `app/globals.css`
+- أضف مكونات جديدة في `components/ui/`
 
-- [ ] Social login providers
-- [ ] Deeper analytics & dashboards
-- [ ] Email notifications
-- [ ] Product reviews and ratings
-- [ ] Wishlist functionality
-- [ ] Multi-language support
+### إضافة صفحات جديدة
+1. أنشئ مجلد جديد في `app/`
+2. أضف ملف `page.tsx`
+3. استخدم المكونات الموجودة
+
+## الدعم والمساعدة
+
+### التوثيق
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs)
+
+### التواصل
+- **البريد الإلكتروني**: support@hnlaptopstore.com
+- **الهاتف**: +966 50 123 4567
+- **الموقع**: https://hnlaptopstore.com
+
+## الترخيص
+
+هذا المشروع مرخص تحت رخصة MIT. راجع ملف [LICENSE](LICENSE) للتفاصيل.
+
+## المساهمة
+
+نرحب بمساهماتكم! يرجى قراءة [دليل المساهمة](CONTRIBUTING.md) قبل البدء.
+
+## التحديثات المستقبلية
+
+### المرحلة القادمة
+- [ ] تطبيق الهاتف المحمول
+- [ ] نظام نقاط الولاء
+- [ ] دعم الدفع الرقمي المحلي
+- [ ] تكامل مع منصات التواصل الاجتماعي
+- [ ] نظام توصيل ذكي
+- [ ] دعم متعدد اللغات
+
+### التحسينات المخططة
+- [ ] تحسين سرعة التحميل
+- [ ] إضافة المزيد من طرق الدفع
+- [ ] تحسين تجربة البحث
+- [ ] إضافة نظام التقييمات المتقدم
+- [ ] تكامل مع أنظمة إدارة المخزون
 
 ---
 
-Built with ❤️ using Next.js and Supabase
+**H.N Laptop Store** - بوابتك لعالم من الأداء الفائق 🚀

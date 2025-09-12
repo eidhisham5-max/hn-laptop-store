@@ -1,299 +1,347 @@
 'use client'
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import dynamic from 'next/dynamic'
-import { useRouter } from 'next/navigation'
-import { Button } from '../components/ui/Button'
-import { Input } from '../components/ui/Input'
-import { Select } from '../components/ui/Select'
-import { Badge } from '../components/ui/Badge'
-import { useToast } from '../components/ToastProvider'
-import { addToCart } from '../data/products'
-import { fetchProducts } from '../data/db'
 
-// Code-split heavy components
-const ProductGrid = dynamic(
-  () => import('../components/products/ProductGrid').then(m => m.ProductGrid),
-  { ssr: false }
-)
-const ProductFilters = dynamic(
-  () => import('../components/products/ProductFilters').then(m => m.ProductFilters),
-  { ssr: false }
-)
+import React, { useState, useEffect } from 'react'
+import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
+import ProductFilters from '@/components/products/ProductFilters'
+import ProductGrid from '@/components/products/ProductGrid'
+import { Button } from '@/components/ui/Button'
+import { Filter, X } from 'lucide-react'
 
-// Small debounced value hook
-function useDebouncedValue<T>(value: T, delayMs: number): T {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delayMs)
-    return () => clearTimeout(id)
-  }, [value, delayMs])
-  return debounced
+interface Product {
+  id: number
+  name: string
+  brand: string
+  price: number
+  originalPrice?: number
+  rating: number
+  reviewCount: number
+  image: string
+  badge?: string
+  isNew?: boolean
+  isOnSale?: boolean
+  inStock: boolean
+  specifications: {
+    screenSize: string
+    processor: string
+    ram: string
+    storage: string
+  }
 }
 
-export default function ProductsPage() {
-  const { showToast } = useToast()
-  const router = useRouter()
-  
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  
-  // Filter states
-  const [searchInput, setSearchInput] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
-  const [selectedBrand, setSelectedBrand] = useState('')
-  const [selectedCondition, setSelectedCondition] = useState('')
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 })
-  const [sortBy, setSortBy] = useState('name')
+const ProductsPage: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [showFilters, setShowFilters] = useState(false)
+  const [sortBy, setSortBy] = useState('featured')
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const debouncedQuery = useDebouncedValue(searchInput, 250)
-
-  // Load products
-  useEffect(() => {
-    const loadProducts = async () => {
-      setLoading(true)
-      setError('')
-      try {
-        const fetchedProducts = await fetchProducts()
-        setProducts(fetchedProducts)
-      } catch (err) {
-        console.error('Failed to fetch products', err)
-        setError('Failed to load products')
-      } finally {
-        setLoading(false)
+  // Mock data - في التطبيق الحقيقي سيتم جلبها من API
+  const mockProducts: Product[] = [
+    {
+      id: 1,
+      name: 'MacBook Pro 16" M3 Max',
+      brand: 'Apple',
+      price: 12999,
+      originalPrice: 14999,
+      rating: 4.8,
+      reviewCount: 124,
+      image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2026&q=80',
+      badge: 'الأكثر مبيعاً',
+      isOnSale: true,
+      inStock: true,
+      specifications: {
+        screenSize: '16 بوصة',
+        processor: 'Apple M3 Max',
+        ram: '32 GB',
+        storage: '1 TB'
+      }
+    },
+    {
+      id: 2,
+      name: 'Dell XPS 15 OLED',
+      brand: 'Dell',
+      price: 8999,
+      rating: 4.6,
+      reviewCount: 89,
+      image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
+      badge: 'جديد',
+      isNew: true,
+      inStock: true,
+      specifications: {
+        screenSize: '15 بوصة',
+        processor: 'Intel Core i7',
+        ram: '16 GB',
+        storage: '512 GB'
+      }
+    },
+    {
+      id: 3,
+      name: 'ASUS ROG Strix G15',
+      brand: 'ASUS',
+      price: 6999,
+      originalPrice: 7999,
+      rating: 4.7,
+      reviewCount: 156,
+      image: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2042&q=80',
+      badge: 'عرض خاص',
+      isOnSale: true,
+      inStock: true,
+      specifications: {
+        screenSize: '15 بوصة',
+        processor: 'AMD Ryzen 7',
+        ram: '16 GB',
+        storage: '1 TB'
+      }
+    },
+    {
+      id: 4,
+      name: 'HP Spectre x360 14',
+      brand: 'HP',
+      price: 7999,
+      rating: 4.5,
+      reviewCount: 67,
+      image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80',
+      badge: 'محدود',
+      isNew: true,
+      inStock: false,
+      specifications: {
+        screenSize: '14 بوصة',
+        processor: 'Intel Core i5',
+        ram: '8 GB',
+        storage: '256 GB'
+      }
+    },
+    {
+      id: 5,
+      name: 'Lenovo ThinkPad X1 Carbon',
+      brand: 'Lenovo',
+      price: 9999,
+      rating: 4.9,
+      reviewCount: 203,
+      image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
+      badge: 'الأفضل تقييماً',
+      inStock: true,
+      specifications: {
+        screenSize: '14 بوصة',
+        processor: 'Intel Core i7',
+        ram: '16 GB',
+        storage: '512 GB'
+      }
+    },
+    {
+      id: 6,
+      name: 'MSI Creator 17',
+      brand: 'MSI',
+      price: 11999,
+      originalPrice: 13999,
+      rating: 4.6,
+      reviewCount: 78,
+      image: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2042&q=80',
+      badge: 'عرض خاص',
+      isOnSale: true,
+      inStock: true,
+      specifications: {
+        screenSize: '17 بوصة',
+        processor: 'Intel Core i9',
+        ram: '32 GB',
+        storage: '2 TB'
       }
     }
+  ]
 
+  useEffect(() => {
+    // Simulate API call
+    const loadProducts = async () => {
+      setIsLoading(true)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setProducts(mockProducts)
+      setFilteredProducts(mockProducts)
+      setIsLoading(false)
+    }
+    
     loadProducts()
   }, [])
 
-  // Get unique values for filters
-  const brands = useMemo(() => {
-    const uniqueBrands = Array.from(new Set(products.map(p => p.brand_name || p.brand?.name).filter(Boolean)))
-    return uniqueBrands.map(brand => ({ value: brand, label: brand, count: products.filter(p => (p.brand_name || p.brand?.name) === brand).length }))
-  }, [products])
+  const handleFiltersChange = (filters: any) => {
+    let filtered = [...products]
 
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
-    return uniqueCategories.map(category => ({ value: category, label: category, count: products.filter(p => p.category === category).length }))
-  }, [products])
-
-  const conditions = useMemo(() => {
-    const uniqueConditions = Array.from(new Set(products.map(p => p.condition).filter(Boolean)))
-    return uniqueConditions.map(condition => ({ value: condition, label: condition, count: products.filter(p => p.condition === condition).length }))
-  }, [products])
-
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    let filtered = products.filter(product => {
-      // Search query
-      if (debouncedQuery && !product.name.toLowerCase().includes(debouncedQuery.toLowerCase()) && 
-          !product.specs?.toLowerCase().includes(debouncedQuery.toLowerCase())) {
-        return false
-      }
-      
-      // Category filter
-      if (selectedCategory && product.category !== selectedCategory) {
-        return false
-      }
-      
-      // Brand filter
-      if (selectedBrand && (product.brand_name || product.brand?.name) !== selectedBrand) {
-        return false
-      }
-      
-      // Condition filter
-      if (selectedCondition && product.condition !== selectedCondition) {
-        return false
-      }
-      
-      // Price range filter
-      if (product.price < priceRange.min || product.price > priceRange.max) {
-        return false
-      }
-      
-      return true
-    })
-
-    // Sort products
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return a.price - b.price
-        case 'price-high':
-          return b.price - a.price
-        case 'name':
-          return a.name.localeCompare(b.name)
-        case 'rating':
-          return (b.rating || 0) - (a.rating || 0)
-        case 'newest':
-          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-        default:
-          return 0
-      }
-    })
-
-    return filtered
-  }, [products, debouncedQuery, selectedCategory, selectedBrand, selectedCondition, priceRange, sortBy])
-
-  const handleAddToCart = async (product: any) => {
-    try {
-      await addToCart(product.id)
-      showToast('Product added to cart!', 'success')
-    } catch (error) {
-      showToast('Failed to add product to cart', 'error')
+    // Apply price filter
+    if (filters.priceRange) {
+      filtered = filtered.filter(product => 
+        product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+      )
     }
+
+    // Apply brand filter
+    if (filters.brands && filters.brands.length > 0) {
+      filtered = filtered.filter(product => 
+        filters.brands.includes(product.brand.toLowerCase())
+      )
+    }
+
+    // Apply screen size filter
+    if (filters.screenSize && filters.screenSize.length > 0) {
+      filtered = filtered.filter(product => 
+        filters.screenSize.some((size: string) => 
+          product.specifications.screenSize.includes(size)
+        )
+      )
+    }
+
+    // Apply processor filter
+    if (filters.processor && filters.processor.length > 0) {
+      filtered = filtered.filter(product => 
+        filters.processor.some((proc: string) => 
+          product.specifications.processor.toLowerCase().includes(proc.toLowerCase())
+        )
+      )
+    }
+
+    // Apply RAM filter
+    if (filters.ram && filters.ram.length > 0) {
+      filtered = filtered.filter(product => 
+        filters.ram.some((ram: string) => 
+          product.specifications.ram.toLowerCase().includes(ram.toLowerCase())
+        )
+      )
+    }
+
+    // Apply storage filter
+    if (filters.storage && filters.storage.length > 0) {
+      filtered = filtered.filter(product => 
+        filters.storage.some((storage: string) => 
+          product.specifications.storage.toLowerCase().includes(storage.toLowerCase())
+        )
+      )
+    }
+
+    // Apply in stock filter
+    if (filters.inStock) {
+      filtered = filtered.filter(product => product.inStock)
+    }
+
+    // Apply on sale filter
+    if (filters.onSale) {
+      filtered = filtered.filter(product => product.isOnSale)
+    }
+
+    setFilteredProducts(filtered)
   }
 
-  const handleProductClick = useCallback((product: any) => {
-    router.push(`/products/${product.id}`)
-  }, [router])
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort)
+    let sorted = [...filteredProducts]
 
-  const handleClearFilters = () => {
-    setSearchInput('')
-    setSelectedCategory('')
-    setSelectedBrand('')
-    setSelectedCondition('')
-    setPriceRange({ min: 0, max: 10000 })
-    setSortBy('name')
+    switch (sort) {
+      case 'price-low':
+        sorted.sort((a, b) => a.price - b.price)
+        break
+      case 'price-high':
+        sorted.sort((a, b) => b.price - a.price)
+        break
+      case 'rating':
+        sorted.sort((a, b) => b.rating - a.rating)
+        break
+      case 'newest':
+        sorted.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0))
+        break
+      case 'popular':
+        sorted.sort((a, b) => b.reviewCount - a.reviewCount)
+        break
+      default:
+        // Keep original order for 'featured'
+        break
+    }
+
+    setFilteredProducts(sorted)
   }
 
-  const sortOptions = [
-    { value: 'name', label: 'Name A-Z' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'rating', label: 'Rating' },
-    { value: 'newest', label: 'Newest First' }
-  ]
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">All Laptops</h1>
-              <p className="text-gray-600 mt-2">
-                {loading ? 'Loading...' : `${filteredProducts.length} products found`}
-              </p>
-            </div>
-            
-            {/* Mobile Filter Button */}
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="md:hidden"
-            >
-              Filters
-            </Button>
-          </div>
-
-          {/* Search and Controls */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md">
-              <Input
-                placeholder="Search products..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                leftIcon={
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                }
-              />
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <Select
-                options={sortOptions}
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-48"
-              />
-              
-              <div className="flex items-center gap-2">
-                <Button
-                  variant={viewMode === 'grid' ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                  </svg>
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'primary' : 'outline'}
-                  size="sm"
-                  onClick={() => setViewMode('list')}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                </Button>
-              </div>
-            </div>
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="container-custom py-16">
+          <div className="flex items-center justify-center">
+            <div className="spinner"></div>
           </div>
         </div>
+        <Footer />
+      </div>
+    )
+  }
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+  return (
+    <div className="min-h-screen bg-white">
+      <Header />
+      
+      <main className="container-custom py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="heading-1 mb-4">جميع اللابتوبات</h1>
+          <p className="text-lg text-gray-600">
+            اكتشف مجموعتنا الكاملة من اللابتوبات والملحقات التقنية
+          </p>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Desktop Filters */}
-          <div className="hidden lg:block w-80 flex-shrink-0">
-            <ProductFilters
-              categories={categories}
-              brands={brands}
-              conditions={conditions}
-              priceRange={priceRange}
-              selectedCategory={selectedCategory}
-              selectedBrand={selectedBrand}
-              selectedCondition={selectedCondition}
-              selectedPriceRange={priceRange}
-              onCategoryChange={setSelectedCategory}
-              onBrandChange={setSelectedBrand}
-              onConditionChange={setSelectedCondition}
-              onPriceRangeChange={setPriceRange}
-              onClearFilters={handleClearFilters}
-            />
+          <div className="hidden lg:block lg:w-80 flex-shrink-0">
+            <div className="sticky top-24">
+              <ProductFilters onFiltersChange={handleFiltersChange} />
+            </div>
+          </div>
+
+          {/* Mobile Filter Button */}
+          <div className="lg:hidden mb-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowMobileFilters(true)}
+              className="w-full"
+            >
+              <Filter className="w-5 h-5 ml-2" />
+              الفلاتر
+            </Button>
           </div>
 
           {/* Products Grid */}
           <div className="flex-1">
             <ProductGrid
               products={filteredProducts}
-              loading={loading}
-              error={error}
               viewMode={viewMode}
-              columns={viewMode === 'grid' ? 3 : 1}
-              onAddToCart={handleAddToCart}
-              onProductClick={handleProductClick}
+              onViewModeChange={setViewMode}
+              sortBy={sortBy}
+              onSortChange={handleSortChange}
             />
           </div>
         </div>
+      </main>
 
-        {/* Mobile Filters: mount only when open to reduce work */}
-        {showFilters && (
-          <ProductFilters
-            categories={categories}
-            brands={brands}
-            conditions={conditions}
-            priceRange={priceRange}
-            selectedCategory={selectedCategory}
-            selectedBrand={selectedBrand}
-            selectedCondition={selectedCondition}
-            selectedPriceRange={priceRange}
-            onCategoryChange={setSelectedCategory}
-            onBrandChange={setSelectedBrand}
-            onConditionChange={setSelectedCondition}
-            onPriceRangeChange={setPriceRange}
-            onClearFilters={handleClearFilters}
-            isMobile
-            isOpen={showFilters}
-            onClose={() => setShowFilters(false)}
-          />
-        )}
-      </div>
+      {/* Mobile Filters Modal */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowMobileFilters(false)} />
+          <div className="absolute right-0 top-0 h-full w-80 bg-white shadow-strong overflow-y-auto">
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-semibold">الفلاتر</h3>
+              <button
+                onClick={() => setShowMobileFilters(false)}
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <ProductFilters onFiltersChange={handleFiltersChange} />
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <Footer />
     </div>
   )
 }
+
+export default ProductsPage

@@ -1,17 +1,62 @@
-import React from 'react'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-import { Header } from './components/layout/Header'
-import { Footer } from './components/layout/Footer'
-import { ToastProvider } from './components/ToastProvider'
-
-// Use Inter font for consistency with design system
-const inter = Inter({ subsets: ['latin'], variable: '--font-body' })
 
 export const metadata: Metadata = {
-  title: 'H.N Laptop Store - Premium Laptops at Best Prices',
-  description: 'New & Refurbished laptops from Dell, HP, and Lenovo. Quality guaranteed with warranty support in Egypt.',
+  title: 'H.N Laptop Store - متجر لابتوبات إلكتروني متكامل',
+  description: 'اكتشف أفضل اللابتوبات والملحقات التقنية في H.N Laptop Store. منتجات أصلية، ضمان شامل، وتوصيل سريع في جميع أنحاء المملكة العربية السعودية.',
+  keywords: 'لابتوبات، كمبيوتر محمول، تقنية، إلكترونيات، متجر، السعودية، ضمان، توصيل',
+  authors: [{ name: 'H.N Laptop Store Team' }],
+  creator: 'H.N Laptop Store',
+  publisher: 'H.N Laptop Store',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://hnlaptopstore.com'),
+  alternates: {
+    canonical: '/',
+    languages: {
+      'ar-SA': '/ar',
+      'en-US': '/en',
+    },
+  },
+  openGraph: {
+    title: 'H.N Laptop Store - متجر لابتوبات إلكتروني متكامل',
+    description: 'اكتشف أفضل اللابتوبات والملحقات التقنية في H.N Laptop Store. منتجات أصلية، ضمان شامل، وتوصيل سريع.',
+    url: 'https://hnlaptopstore.com',
+    siteName: 'H.N Laptop Store',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'H.N Laptop Store - متجر لابتوبات إلكتروني',
+      },
+    ],
+    locale: 'ar_SA',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'H.N Laptop Store - متجر لابتوبات إلكتروني متكامل',
+    description: 'اكتشف أفضل اللابتوبات والملحقات التقنية في H.N Laptop Store.',
+    images: ['/twitter-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+  },
 }
 
 export default function RootLayout({
@@ -20,27 +65,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} antialiased bg-white text-gray-900`}>
-        {/* Skip to content link for keyboard users */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-primary-600 focus:text-white"
-        >
-          Skip to main content
-        </a>
-        <ToastProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main id="main-content" role="main" tabIndex={-1} className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </ToastProvider>
+    <html lang="ar" dir="rtl">
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#0052CC" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
+      <body className="antialiased">
+        {children}
       </body>
     </html>
   )
 }
-
-
