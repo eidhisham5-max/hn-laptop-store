@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/hnlaptopstore/hn-laptop-store/discussions
+    about: اسأل أسئلة عامة أو ناقش الأفكار مع المجتمع
+  - name: 📧 البريد الإلكتروني
+    url: mailto:support@hnlaptopstore.com
+    about: اتصل بنا مباشرة للحصول على الدعم
+  - name: 🔒 مشكلة أمنية
+    url: mailto:security@hnlaptopstore.com
+    about: أبلغ عن ثغرة أمنية بطريقة مسؤولة
+  - name: 📚 الوثائق
+    url: https://docs.hnlaptopstore.com
+    about: اقرأ الوثائق الرسمية
+  - name: 🌐 الموقع الرسمي
+    url: https://hnlaptopstore.com
+    about: زر موقعنا الرسمي

@@ -1,211 +1,198 @@
-# HN Laptop Store
+# H.N Laptop Store - متجر لابتوبات إلكتروني متكامل
 
-A modern, production-ready e-commerce platform for selling laptops, built with Next.js 14, Supabase, and Tailwind CSS. Includes a complete Design System, admin dashboard, secure Paymob payments, E2E tests, and deployment tooling.
+متجر إلكتروني متكامل ومتطور لبيع اللابتوبات والملحقات التقنية، مصمم خصيصاً للسوق السعودي مع دعم كامل للغة العربية والاتجاه من اليمين إلى اليسار (RTL).
 
-## Features
+## 🚀 المميزات الرئيسية
 
-- 🛒 **Product Catalog**: Listing, filters (brand/category/condition/price), search, grid/list view
-- 🛍️ **Cart & Checkout**: Add to cart, order summary, success page, order tracking
-- 💳 **Payments (Paymob)**: Initiation API, hosted iframe flow, HMAC webhook verification
-- 👨‍💼 **Admin Dashboard**: Products CRUD, orders management, basic analytics
-- 📱 **Responsive UI**: Desktop/Tablet/Mobile with polished components and micro-interactions
-- 🔐 **Auth**: Supabase Auth for session handling and admin access
-- 🖼️ **Images**: `next/image` with remote patterns and optimization
-- ✅ **Testing**: Playwright E2E smoke flow (home → product → cart → checkout)
-- 🚀 **Deployment**: Docker/Nginx, CI/CD, monitoring, backup/restore scripts
+### 🎨 تصميم متطور ومتجاوب
+- **نظام تصميم متكامل** مبني على أفضل ممارسات التصميم الحديثة
+- **تصميم متجاوب** يعمل بشكل مثالي على جميع الأجهزة
+- **دعم كامل للغة العربية** مع اتجاه RTL
+- **ألوان متناسقة** مبنية على علم نفس الألوان لزيادة الثقة والمبيعات
 
-## Tech Stack
+### 🛍️ تجربة تسوق متميزة
+- **صفحة رئيسية جذابة** مع عرض المنتجات المميزة
+- **فلاتر بحث متقدمة** للعثور على المنتج المناسب بسهولة
+- **صفحات تفاصيل منتجات شاملة** مع معرض صور وتقييمات
+- **عربة تسوق ذكية** مع إدارة الكميات والأسعار
+- **نظام دفع آمن** مع خطوات واضحة ومبسطة
 
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript
-- **Styling**: Tailwind CSS, Design Tokens, class-variance-authority
-- **Backend**: Supabase (Postgres, Auth, Storage)
-- **Payments**: Paymob Accept (Egypt)
-- **Testing**: Playwright
-- **Deployment**: Docker, Nginx, GitHub Actions
+### 👨‍💼 لوحة تحكم إدارية متكاملة
+- **إحصائيات شاملة** لأداء المتجر
+- **إدارة المنتجات** مع إمكانية الإضافة والتعديل والحذف
+- **إدارة الطلبات** مع تتبع الحالات
+- **إدارة العملاء** والمحتوى
 
-## Getting Started
+### 🔐 نظام مصادقة متقدم
+- **تسجيل دخول وإنشاء حساب** بتصميم احترافي
+- **دعم تسجيل الدخول الاجتماعي** (Google, Facebook)
+- **استعادة كلمة المرور** مع نظام آمن
 
-### Prerequisites
+## 🛠️ التقنيات المستخدمة
 
-- Node.js 18+ 
-- npm or yarn
-- Supabase account
+- **Next.js 14** - إطار عمل React متطور
+- **TypeScript** - لكتابة كود أكثر أماناً وموثوقية
+- **Tailwind CSS** - نظام تصميم سريع ومرن
+- **Framer Motion** - للحركات والتفاعلات السلسة
+- **React Hook Form** - لإدارة النماذج بكفاءة
+- **Headless UI** - مكونات UI متاحة ومتاحة
+- **Lucide React** - مكتبة أيقونات حديثة
 
-### Installation
+## 📦 التثبيت والتشغيل
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd hn-laptop-store
-   ```
+### المتطلبات الأساسية
+- Node.js 18.0.0 أو أحدث
+- npm 9.0.0 أو أحدث
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### خطوات التثبيت
 
-3. **Set up environment variables**
-   ```bash
-   cp env.example .env.local
-   ```
-   
-   Fill in your Supabase and Paymob credentials in `.env.local`:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-   PAYMOB_API_KEY=your_paymob_api_key
-   PAYMOB_HMAC_SECRET=your_paymob_hmac_secret
-   PAYMOB_INTEGRATION_ID=your_paymob_integration_id
-   PAYMOB_IFRAME_ID=your_paymob_iframe_id
-   ```
+1. **استنساخ المشروع**
+```bash
+git clone https://github.com/your-username/hn-laptop-store.git
+cd hn-laptop-store
+```
 
-4. **Set up the database**
-   
-   Follow the instructions in [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) to create the database schema and insert sample data.
+2. **تثبيت التبعيات**
+```bash
+npm install
+```
 
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
+3. **إعداد متغيرات البيئة**
+```bash
+cp .env.example .env.local
+# قم بتعديل القيم في ملف .env.local حسب احتياجاتك
+```
 
-6. **Open your browser**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
+4. **تشغيل المشروع في وضع التطوير**
+```bash
+npm run dev
+```
 
-## Available Scripts
+5. **فتح المتصفح**
+افتح [http://localhost:3000](http://localhost:3000) في متصفحك
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript check
-- `npm run analyze` - Analyze production bundle
-- `npm run test:e2e` - Run Playwright tests (headed)
-- `npm run e2e:headless` - Run Playwright tests headless
-- `npm run backup` / `npm run restore` - DB backup/restore helpers
-- `npm run health-check` - API health probe
-- `npm run build:production` - Build with analysis flags
-- `npm run deploy:check` - CI sanity checks
+### أوامر إضافية
 
-## Project Structure
+```bash
+# بناء المشروع للإنتاج
+npm run build
+
+# تشغيل المشروع في وضع الإنتاج
+npm run start
+
+# فحص الأخطاء
+npm run lint
+
+# إصلاح الأخطاء تلقائياً
+npm run lint:fix
+
+# فحص الأنواع
+npm run type-check
+
+# تنسيق الكود
+npm run format
+
+# فحص تنسيق الكود
+npm run format:check
+```
+
+## 📁 هيكل المشروع
 
 ```
 hn-laptop-store/
-├── app/                    # Next.js app directory
-│   ├── admin/             # Admin panel pages
-│   │   ├── orders/        # Order management
-│   │   └── products/      # Product management
-│   ├── cart/              # Shopping cart pages
-│   ├── components/        # Reusable components
-│   ├── data/              # Data access layer
-│   ├── orders/            # Customer order tracking
-│   └── products/          # Product pages
-├── public/                # Static assets
-├── supabaseClient.js      # Supabase configuration (consolidated)
-└── tailwind.config.js     # Tailwind configuration
+├── app/                    # صفحات Next.js
+│   ├── auth/              # صفحات المصادقة
+│   ├── products/          # صفحات المنتجات
+│   ├── cart/              # صفحة عربة التسوق
+│   ├── checkout/          # صفحة الدفع
+│   ├── admin/             # لوحة تحكم المدير
+│   ├── globals.css        # الأنماط العامة
+│   ├── layout.tsx         # التخطيط الرئيسي
+│   └── page.tsx           # الصفحة الرئيسية
+├── components/            # مكونات React
+│   ├── ui/               # مكونات UI الأساسية
+│   ├── layout/           # مكونات التخطيط
+│   ├── home/             # مكونات الصفحة الرئيسية
+│   ├── products/         # مكونات المنتجات
+│   ├── product/          # مكونات تفاصيل المنتج
+│   ├── cart/             # مكونات عربة التسوق
+│   ├── checkout/         # مكونات الدفع
+│   └── admin/            # مكونات لوحة التحكم
+├── lib/                  # مكتبات مساعدة
+├── public/               # الملفات الثابتة
+└── styles/               # ملفات الأنماط
 ```
 
-## Database Schema
+## 🎨 نظام التصميم
 
-The application uses the following main tables:
+### الألوان الأساسية
+- **الأزرق التقني (#0052CC)** - اللون الأساسي للعلامة التجارية
+- **الأبيض النقي (#FFFFFF)** - للخلفيات الرئيسية
+- **الرمادي الداكن (#1A202C)** - للنصوص والعناوين
+- **الرمادي الفاتح (#F7FAFC)** - لحقول الإدخال والبطاقات الثانوية
+- **الأخضر (#38A169)** - لرسائل النجاح
+- **الأحمر (#E53E3E)** - لرسائل الخطأ
 
-- **brands**: Product brands (Apple, Dell, HP, etc.)
-- **products**: Product information and specifications
-- **product_images**: Product image URLs
-- **orders**: Customer orders
-- **order_items**: Individual items in each order
- - Columns include pricing and `discount`. See `SUPABASE_SETUP.md` and `fix-database.sql`.
+### الخطوط
+- **Inter** - الخط الأساسي للنصوص
+- **Poppins** - خط احتياطي
 
-## Key Features
+### المبادئ التصميمية
+- **الزوايا الدائرية** في جميع العناصر لشعور الأمان والود
+- **الظلال الناعمة** لإضافة العمق
+- **الحركات السلسة** لتحسين تجربة المستخدم
+- **التصميم المتجاوب** لجميع أحجام الشاشات
 
-### Product Management
-- Add/edit/delete products
-- Upload product images
-- Manage product status (Active/Inactive)
-- Set pricing and discounts
+## 🌟 المميزات المتقدمة
 
-### Order Processing
-- Customer order placement
-- Order status tracking
-- Admin order management
-- Order history for customers
+### تحسين الأداء
+- **تحميل سريع** مع Next.js 14
+- **تحسين الصور** تلقائياً
+- **تقسيم الكود** لتحسين الأداء
+- **ذاكرة التخزين المؤقت** للبيانات
 
-### Shopping Experience
-- Advanced product filtering
-- Search functionality
-- Shopping cart with real-time updates
-- Responsive product cards
+### تحسين محركات البحث (SEO)
+- **Meta tags** محسنة
+- **Open Graph** للشبكات الاجتماعية
+- **Sitemap** تلقائي
+- **دعم متعدد اللغات**
 
-## Deployment
+### إمكانية الوصول
+- **دعم قارئات الشاشة**
+- **تنقل بلوحة المفاتيح**
+- **تباين ألوان مناسب**
+- **نصوص بديلة للصور**
 
-### Vercel
+## 🤝 المساهمة
 
-1. Connect repo and set environment variables
-2. Ensure image domains are configured in `next.config.ts`
-3. Deploy (auto build)
+نرحب بمساهماتكم! يرجى قراءة [دليل المساهمة](CONTRIBUTING.md) قبل البدء.
 
-### Docker + Nginx (Production)
+### كيفية المساهمة
+1. Fork المشروع
+2. إنشاء فرع للميزة الجديدة (`git checkout -b feature/AmazingFeature`)
+3. Commit التغييرات (`git commit -m 'Add some AmazingFeature'`)
+4. Push للفرع (`git push origin feature/AmazingFeature`)
+5. فتح Pull Request
 
-See `DEPLOYMENT.md`, `Dockerfile`, `docker-compose.yml`, and `nginx.conf` for a reverse proxy setup, HTTPS termination, and environment configuration. CI example in `.github/workflows/deploy.yml`.
+## 📄 الترخيص
 
-## Environment Variables
+هذا المشروع مرخص تحت رخصة MIT - راجع ملف [LICENSE](LICENSE) للتفاصيل.
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | Yes (for admin) |
-| `NEXT_PUBLIC_ADMIN_EMAIL` | Admin email for UI hints | No |
-| `PAYMOB_API_KEY` | Paymob API key | Yes (payments) |
-| `PAYMOB_HMAC_SECRET` | Paymob webhook HMAC secret | Yes (webhook) |
-| `PAYMOB_INTEGRATION_ID` | Paymob card integration ID | Yes (payments) |
-| `PAYMOB_IFRAME_ID` | Paymob iframe ID | Yes (payments) |
+## 📞 الدعم
 
-## Testing & QA
+إذا واجهت أي مشاكل أو لديك أسئلة:
 
-- E2E smoke: `npm run test:e2e` (requires dev server)
-- Accessibility: keyboard navigation, skip-link, roles/labels added; basic WCAG AA contrast via Tailwind tokens
-- Performance: code-splitting for product pages, debounce search, optimized images
+- **فتح Issue** في GitHub
+- **البريد الإلكتروني**: info@hnlaptopstore.com
+- **الهاتف**: +966123456789
 
-## Documentation Index
+## 🙏 شكر وتقدير
 
-- Design System: `DESIGN_SYSTEM.md`
-- Component Library: `COMPONENT_LIBRARY_GUIDE.md`
-- Wireframes: `DESIGN_WIREFRAMES.md`
-- Figma-text specs: `FIGMA_DESIGNS_OVERVIEW.md` and `designs/*`
-- Responsive notes: `RESPONSIVE_OPTIMIZATION.md`
-- Supabase setup: `SUPABASE_SETUP.md`
-- Database fixes: `fix-database.sql`
-- Deployment guide: `DEPLOYMENT.md`, `PRODUCTION_CHECKLIST.md`
-- Final report: `FINAL_REPORT.md`
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-For support, email support@hnlaptopstore.com or create an issue in the repository.
-
-## Roadmap
-
-- [ ] Social login providers
-- [ ] Deeper analytics & dashboards
-- [ ] Email notifications
-- [ ] Product reviews and ratings
-- [ ] Wishlist functionality
-- [ ] Multi-language support
+- [Next.js](https://nextjs.org/) - إطار عمل React الرائع
+- [Tailwind CSS](https://tailwindcss.com/) - نظام تصميم سريع
+- [Framer Motion](https://www.framer.com/motion/) - مكتبة الحركات
+- [Lucide](https://lucide.dev/) - مكتبة الأيقونات
 
 ---
 
-Built with ❤️ using Next.js and Supabase
+**H.N Laptop Store** - بوابتك لعالم من الأداء الفائق 🚀

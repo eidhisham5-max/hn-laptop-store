@@ -47,7 +47,7 @@ export default function AdminAnalytics() {
     try {
       setLoading(true)
       
-      const [ordersData, productsData] = await Promise.all([
+      const [ordersData] = await Promise.all([
         fetchOrders(),
         fetchProducts()
       ])

@@ -252,20 +252,20 @@ export default function OrderSuccessPage() {
               {/* Action Buttons */}
               <div className="space-y-3">
                 <Link href="/orders" className="block">
-                  <Button fullWidth>
+                  <Button className="w-full">
                     Track Your Order
                   </Button>
                 </Link>
                 
                 <Link href="/products" className="block">
-                  <Button variant="outline" fullWidth>
+                  <Button variant="outline" className="w-full">
                     Continue Shopping
                   </Button>
                 </Link>
                 
                 <Button
                   variant="outline"
-                  fullWidth
+                  className="w-full"
                   onClick={() => window.print()}
                 >
                   Print Receipt

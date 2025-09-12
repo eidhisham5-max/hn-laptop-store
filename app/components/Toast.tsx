@@ -21,6 +21,7 @@ export default function Toast({ message, type, isVisible, onClose, duration = 30
       }, duration)
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [isVisible, duration, onClose])
 
   if (!isVisible) return null

@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '../../supabaseClient'
 
@@ -10,7 +10,7 @@ interface AdminGuardProps {
 
 export default function AdminGuard({ children }: AdminGuardProps) {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null)
-  const router = useRouter()
+  // const router = useRouter()
   const adminEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL
 
   useEffect(() => {
