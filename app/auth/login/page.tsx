@@ -6,14 +6,14 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent } from '@/components/ui/Card'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock } from 'lucide-react'
 
 const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
-  const [showPassword, setShowPassword] = useState(false)
+  // const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -110,7 +110,7 @@ const LoginPage: React.FC = () => {
                 <div className="relative">
                   <Input
                     label="كلمة المرور"
-                    type={showPassword ? 'text' : 'password'}
+                    type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}

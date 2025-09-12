@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
-import { supabase } from '../../../../supabaseClient'
+// import { supabase } from '../../../../supabaseClient'
 
 const PAYMOB_HMAC = process.env.PAYMOB_HMAC || ''
 
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   try {
     const payload = JSON.parse(raw)
     const success = payload?.obj?.success === true
-    const orderId = payload?.obj?.order?.merchant_order_id // not used in our init; fallback to metadata if added later
+    // const orderId = payload?.obj?.order?.merchant_order_id // not used in our init; fallback to metadata if added later
     const amountCents = payload?.obj?.amount_cents
     const paymobOrderId = payload?.obj?.order?.id
 

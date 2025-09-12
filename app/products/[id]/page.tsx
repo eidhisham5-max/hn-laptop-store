@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { StarRating } from '@/components/ui/StarRating'
 import { Badge } from '@/components/ui/Badge'
-import { ArrowLeft, Share2 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
 interface Product {
   id: number

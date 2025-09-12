@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
 import { Badge } from '../ui/Badge'
 import { cn } from '../../lib/utils'
@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
-  const router = useRouter()
+  // const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
               </svg>
               {cartCount > 0 && (
                 <Badge 
-                  variant="destructive" 
+                  variant="error" 
                   className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                 >
                   {cartCount}

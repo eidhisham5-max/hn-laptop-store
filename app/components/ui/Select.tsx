@@ -32,7 +32,7 @@ export interface SelectOption {
 }
 
 export interface SelectProps 
-  extends React.SelectHTMLAttributes<HTMLSelectElement>,
+  extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'>,
     VariantProps<typeof selectVariants> {
   label?: string
   error?: string
@@ -79,7 +79,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         <div className="relative">
           <select
             className={cn(
-              selectVariants({ variant: selectVariant, size }),
+              selectVariants({ variant: selectVariant, size: size as "sm" | "md" | "lg" }),
               className
             )}
             ref={ref}

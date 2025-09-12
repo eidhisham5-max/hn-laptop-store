@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { StarRating } from '@/components/ui/StarRating'
 import { Badge } from '@/components/ui/Badge'
 import { TrustBadge } from '@/components/ui/TrustBadge'
-import { Heart, ShoppingCart, Share2, Truck, Shield, Headphones, Award } from 'lucide-react'
+import { Heart, ShoppingCart, Share2 } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 
 interface ProductInfoProps {

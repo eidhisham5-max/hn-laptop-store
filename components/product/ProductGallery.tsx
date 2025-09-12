@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { Button } from '@/components/ui/Button'
-import { Zoom, ChevronLeft, ChevronRight } from 'lucide-react'
+// import { Button } from '@/components/ui/Button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface ProductGalleryProps {
   images: string[]
@@ -27,7 +27,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productName }) 
       {/* Main Image */}
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-gray-100 group">
         <Image
-          src={images[selectedImage]}
+          src={images[selectedImage] || images[0] || ''}
           alt={`${productName} - صورة ${selectedImage + 1}`}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -39,7 +39,9 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productName }) 
           onClick={() => setIsZoomed(true)}
           className="absolute top-4 left-4 p-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-lg shadow-soft transition-all duration-200 opacity-0 group-hover:opacity-100"
         >
-          <Zoom className="w-5 h-5 text-gray-700" />
+          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </button>
 
         {/* Navigation Arrows */}
@@ -98,7 +100,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, productName }) 
         <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
           <div className="relative max-w-4xl max-h-full">
             <Image
-              src={images[selectedImage]}
+              src={images[selectedImage] || images[0] || ''}
               alt={`${productName} - مكبر`}
               width={800}
               height={600}

@@ -142,14 +142,14 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFiltersChange }) => {
       if (filterType === 'brand' || filterType === 'screenSize' || filterType === 'processor' || 
           filterType === 'ram' || filterType === 'storage' || filterType === 'graphicsCard' || 
           filterType === 'category') {
-        const currentValues = newFilters[filterType as keyof typeof newFilters] as string[]
+        const currentValues = (newFilters[filterType as keyof typeof newFilters] as string[]) || []
         if (checked) {
-          newFilters[filterType as keyof typeof newFilters] = [...currentValues, value]
+          newFilters[filterType as keyof typeof newFilters] = [...currentValues, value] as any
         } else {
-          newFilters[filterType as keyof typeof newFilters] = currentValues.filter(v => v !== value)
+          newFilters[filterType as keyof typeof newFilters] = currentValues.filter(v => v !== value) as any
         }
       } else if (filterType === 'inStock' || filterType === 'onSale') {
-        newFilters[filterType as keyof typeof newFilters] = checked
+        newFilters[filterType as keyof typeof newFilters] = checked as any
       }
       
       onFiltersChange(newFilters)
@@ -225,7 +225,8 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFiltersChange }) => {
             {group.type === 'checkbox' && (
               <>
                 {group.options.map((option) => {
-                  const isChecked = filters[group.id as keyof typeof filters]?.includes(option.value)
+                  const isChecked = Array.isArray(filters[group.id as keyof typeof filters]) && 
+                    (filters[group.id as keyof typeof filters] as string[])?.includes(option.value)
                   return (
                     <label key={option.value} className="flex items-center justify-between cursor-pointer">
                       <div className="flex items-center space-x-3 space-x-reverse">
@@ -253,7 +254,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFiltersChange }) => {
                     type="number"
                     placeholder="من"
                     value={filters.priceRange[0]}
-                    onChange={(e) => handlePriceRangeChange(Number(e.target.value), filters.priceRange[1])}
+                    onChange={(e) => handlePriceRangeChange(Number(e.target.value), filters.priceRange?.[1] || 0)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                   <span className="text-gray-500">-</span>
@@ -261,7 +262,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFiltersChange }) => {
                     type="number"
                     placeholder="إلى"
                     value={filters.priceRange[1]}
-                    onChange={(e) => handlePriceRangeChange(filters.priceRange[0], Number(e.target.value))}
+                    onChange={(e) => handlePriceRangeChange(filters.priceRange?.[0] || 0, Number(e.target.value))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
@@ -273,7 +274,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({ onFiltersChange }) => {
                       key={option.value}
                       onClick={() => {
                         const [min, max] = option.value.split('-').map(v => v === '+' ? 50000 : Number(v))
-                        handlePriceRangeChange(min, max)
+                        handlePriceRangeChange(min || 0, max || 0)
                       }}
                       className="text-sm p-2 text-gray-600 hover:text-primary-500 hover:bg-primary-50 rounded-lg transition-colors duration-200"
                     >

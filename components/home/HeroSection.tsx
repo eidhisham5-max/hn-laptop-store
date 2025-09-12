@@ -77,8 +77,8 @@ const HeroSection: React.FC = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src={slides[currentSlide].image}
-          alt={slides[currentSlide].title}
+          src={slides[currentSlide]?.image || ''}
+          alt={slides[currentSlide]?.title || ''}
           fill
           className="object-cover transition-all duration-1000"
           priority
@@ -91,25 +91,25 @@ const HeroSection: React.FC = () => {
         <div className="container-custom">
           <div className="max-w-2xl">
             {/* Badge */}
-            {slides[currentSlide].badge && (
+            {slides[currentSlide]?.badge && (
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary-500 text-white text-sm font-medium mb-6 animate-slide-up">
-                {slides[currentSlide].badge}
+                {slides[currentSlide]?.badge}
               </div>
             )}
 
             {/* Title */}
             <h1 className="text-4xl lg:text-6xl font-bold text-white mb-4 animate-fade-in">
-              {slides[currentSlide].title}
+              {slides[currentSlide]?.title}
             </h1>
 
             {/* Subtitle */}
             <h2 className="text-xl lg:text-2xl text-blue-100 mb-6 animate-fade-in">
-              {slides[currentSlide].subtitle}
+              {slides[currentSlide]?.subtitle}
             </h2>
 
             {/* Description */}
             <p className="text-lg text-gray-200 mb-8 leading-relaxed animate-fade-in">
-              {slides[currentSlide].description}
+              {slides[currentSlide]?.description}
             </p>
 
             {/* CTA Buttons */}
@@ -117,9 +117,9 @@ const HeroSection: React.FC = () => {
               <Button
                 size="lg"
                 className="bg-primary-500 hover:bg-primary-600 text-white shadow-glow"
-                onClick={() => window.location.href = slides[currentSlide].ctaLink}
+                onClick={() => window.location.href = slides[currentSlide]?.ctaLink || '#'}
               >
-                {slides[currentSlide].ctaText}
+                {slides[currentSlide]?.ctaText}
               </Button>
               
               <Button

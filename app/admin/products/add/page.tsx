@@ -19,6 +19,7 @@ export default function AddProduct() {
   const [formData, setFormData] = useState({
     name: '',
     brand_id: '',
+    category: '',
     price: '',
     original_price: '',
     stock: '',
@@ -116,7 +117,7 @@ export default function AddProduct() {
       await createProduct({
         name: formData.name,
         brand_id: brandId,
-        category: undefined,
+        category: formData.category || '',
         price: parseFloat(formData.price),
         original_price: formData.original_price ? parseFloat(formData.original_price) : null,
         stock: parseInt(formData.stock || '0', 10),

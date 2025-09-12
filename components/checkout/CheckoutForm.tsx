@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Badge } from '@/components/ui/Badge'
+// import { Badge } from '@/components/ui/Badge'
 import { CreditCard, MapPin, User, Phone, Mail, Lock } from 'lucide-react'
 
 interface CheckoutFormProps {
@@ -447,7 +447,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ onComplete }) => {
       {/* Form Content */}
       <Card>
         <CardHeader>
-          <CardTitle>{steps[currentStep - 1].title}</CardTitle>
+          <CardTitle>{steps[currentStep - 1]?.title}</CardTitle>
         </CardHeader>
         <CardContent>
           {currentStep === 1 && renderShippingStep()}

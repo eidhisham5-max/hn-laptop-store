@@ -6,7 +6,7 @@ import StatsCards from '@/components/admin/StatsCards'
 import RecentOrders from '@/components/admin/RecentOrders'
 import ProductTable from '@/components/admin/ProductTable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Button } from '@/components/ui/Button'
+// import { Button } from '@/components/ui/Button'
 import { Menu, Bell, Search } from 'lucide-react'
 
 const AdminDashboard: React.FC = () => {

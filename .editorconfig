@@ -5,12 +5,12 @@ root = true
 
 # All files
 [*]
-charset = utf-8
-end_of_line = lf
-insert_final_newline = true
-trim_trailing_whitespace = true
 indent_style = space
 indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
 
 # Markdown files
 [*.md]
@@ -28,18 +28,19 @@ indent_size = 2
 [package.json]
 indent_size = 2
 
-# TypeScript and JavaScript files
-[*.{ts,tsx,js,jsx}]
+# TypeScript/JavaScript files
+[*.{js,jsx,ts,tsx}]
 indent_size = 2
+quote_type = single
 
-# CSS and SCSS files
-[*.{css,scss,sass}]
+# CSS files
+[*.{css,scss,sass,less}]
 indent_size = 2
 
 # HTML files
-[*.html]
+[*.{html,htm}]
 indent_size = 2
 
-# Markdown files
-[*.md]
-trim_trailing_whitespace = false
+# Configuration files
+[*.{ini,cfg,conf}]
+indent_size = 2

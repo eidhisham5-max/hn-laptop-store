@@ -26,7 +26,7 @@ const StarRating: React.FC<StarRatingProps> = ({
   const stars = Array.from({ length: maxRating }, (_, index) => {
     const starValue = index + 1
     const isFilled = starValue <= rating
-    const isHalfFilled = starValue - 0.5 <= rating && starValue > rating
+    // const isHalfFilled = starValue - 0.5 <= rating && starValue > rating
     
     return (
       <Star

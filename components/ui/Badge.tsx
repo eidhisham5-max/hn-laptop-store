@@ -2,7 +2,7 @@ import React from 'react'
 import { cn } from '@/lib/utils'
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'gray'
+  variant?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'gray' | 'info' | 'destructive'
   size?: 'sm' | 'md' | 'lg'
   children: React.ReactNode
 }
@@ -15,7 +15,9 @@ const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       success: 'bg-success-100 text-success-700',
       error: 'bg-error-100 text-error-700',
       warning: 'bg-yellow-100 text-yellow-700',
-      gray: 'bg-gray-100 text-gray-700'
+      gray: 'bg-gray-100 text-gray-700',
+      info: 'bg-blue-100 text-blue-700',
+      destructive: 'bg-red-100 text-red-700'
     }
     
     const sizes = {

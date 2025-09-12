@@ -86,12 +86,12 @@ export default function AdminProducts() {
     )
   }
 
-  const stats = {
-    total: products.length,
-    active: products.filter(p => p.status === 'Active').length,
-    outOfStock: products.filter(p => p.stock === 0).length,
-    lowStock: products.filter(p => p.stock > 0 && p.stock < 10).length
-  }
+  // const _stats = {
+  //   total: products.length,
+  //   active: products.filter(p => p.status === 'Active').length,
+  //   outOfStock: products.filter(p => p.stock === 0).length,
+  //   lowStock: products.filter(p => p.stock > 0 && p.stock < 10).length
+  // }
 
   return (
     <AdminGuard>

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { TrustBadge } from '@/components/ui/TrustBadge'
+// import { TrustBadge } from '@/components/ui/TrustBadge'
 import { Shield, Truck, Headphones, Award, Clock, CreditCard } from 'lucide-react'
 
 const TrustSection: React.FC = () => {

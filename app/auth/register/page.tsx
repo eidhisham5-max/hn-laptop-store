@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent } from '@/components/ui/Card'
-import { Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, User, Phone } from 'lucide-react'
 
 const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +17,8 @@ const RegisterPage: React.FC = () => {
     password: '',
     confirmPassword: ''
   })
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  // const [showPassword, setShowPassword] = useState(false)
+  // const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
 
@@ -164,7 +164,7 @@ const RegisterPage: React.FC = () => {
 
                 <Input
                   label="كلمة المرور"
-                  type={showPassword ? 'text' : 'password'}
+                    type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
@@ -176,7 +176,7 @@ const RegisterPage: React.FC = () => {
 
                 <Input
                   label="تأكيد كلمة المرور"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                    type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}

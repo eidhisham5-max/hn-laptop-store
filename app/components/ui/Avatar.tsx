@@ -52,14 +52,14 @@ const Avatar: React.FC<AvatarProps> = ({
   onClick
 }) => {
   const [imageError, setImageError] = React.useState(false)
-  const [imageLoaded, setImageLoaded] = React.useState(false)
+  // const [imageLoaded, setImageLoaded] = React.useState(false)
 
   const handleImageError = () => {
     setImageError(true)
   }
 
   const handleImageLoad = () => {
-    setImageLoaded(true)
+        // setImageLoaded(true)
   }
 
   const getInitials = (name: string) => {
