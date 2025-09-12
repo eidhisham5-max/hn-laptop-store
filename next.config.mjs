@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // تحسين الصور
+  // تحسين الصور المتقدم
   images: {
     remotePatterns: [
       {
@@ -23,14 +23,18 @@ const nextConfig = {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   
-  // تحسين الأداء
+  // تحسين الأداء المتقدم
   experimental: {
-    optimizePackageImports: ['@supabase/supabase-js'],
+    optimizePackageImports: ['@supabase/supabase-js', 'lucide-react', '@radix-ui/react-slot'],
+    serverMinification: true,
   },
   
-  // إعدادات Turbopack
+  // إعدادات Turbopack المتقدمة
   turbopack: {
     rules: {
       '*.svg': {
@@ -38,12 +42,18 @@ const nextConfig = {
         as: '*.js',
       },
     },
+    resolveAlias: {
+      '@': './app',
+      '@components': './app/components',
+      '@lib': './app/lib',
+      '@data': './app/data',
+    },
   },
   
   // ضغط
   compress: true,
   
-  // Headers للأمان والأداء
+  // Headers للأمان والأداء المتقدم
   async headers() {
     return [
       {
@@ -64,6 +74,14 @@ const nextConfig = {
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains'
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()'
           }
         ]
       },
@@ -84,11 +102,20 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable'
           }
         ]
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400'
+          }
+        ]
       }
     ]
   },
   
-  // تحسين Webpack
+  // تحسين Webpack المتقدم
   webpack: (config, { dev, isServer }) => {
     // تحسين الأداء في التطوير
     if (dev) {
@@ -102,14 +129,32 @@ const nextConfig = {
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
         chunks: 'all',
+        minSize: 20000,
+        maxSize: 244000,
         cacheGroups: {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
+            priority: 10,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 5,
+            reuseExistingChunk: true,
           },
         },
       }
+    }
+    
+    // تحسين الأداء
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
     }
     
     return config
@@ -142,4 +187,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
