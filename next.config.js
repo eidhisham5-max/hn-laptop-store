@@ -1,17 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // experimental: {
+  //   appDir: true, // No longer needed in Next.js 15
+  // },
   images: {
     domains: ['images.unsplash.com', 'via.placeholder.com', 'picsum.photos'],
     formats: ['image/webp', 'image/avif'],
   },
-  i18n: {
-    locales: ['ar', 'en'],
-    defaultLocale: 'ar',
-    localeDetection: false,
-  },
+  // i18n: {
+  //   locales: ['ar', 'en'],
+  //   defaultLocale: 'ar',
+  //   localeDetection: false,
+  // }, // Not supported in App Router - use middleware instead
   async headers() {
     return [
       {
