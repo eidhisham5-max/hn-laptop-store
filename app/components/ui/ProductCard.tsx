@@ -12,13 +12,13 @@ export interface Product {
   name: string
   price: number
   originalPrice?: number
-  image: string
+  images: string[]
   specs?: string | { processor?: string; memory?: string; storage?: string; display?: string }
   condition?: 'New' | 'Refurbished' | 'Used'
   rating?: number
   reviews?: number
   discount?: number
-  inStock?: boolean
+  stock?: number
   brand?: string | { name?: string }
 }
 
@@ -45,15 +45,17 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       name,
       price,
       originalPrice,
-      image,
+      images,
       specs,
       condition,
       rating,
       reviews,
       discount,
-      inStock = true,
+      stock = 0,
       brand
     } = product
+
+    const inStock = stock > 0
 
     const specsText = typeof specs === 'string'
       ? specs
@@ -64,8 +66,8 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
         : ''
 
     const savings = originalPrice ? originalPrice - price : 0
-    const imageSrc = image && image.trim() !== ''
-      ? image
+    const imageSrc = images && images.length > 0 && images[0].trim() !== ''
+      ? images[0]
       : 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg'
     const brandText = typeof brand === 'string' ? brand : (brand && (brand as any).name) || ''
     const discountPercentage = originalPrice ? Math.round((savings / originalPrice) * 100) : 0
