@@ -80,7 +80,7 @@ export default function EditProductPage() {
       })
       showToast('Product updated successfully!', 'success')
       router.push('/admin/products')
-    } catch (err) {
+    } catch {
       showToast('Failed to update product', 'error')
     } finally {
       setSubmitting(false)

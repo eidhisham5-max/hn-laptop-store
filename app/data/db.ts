@@ -242,7 +242,7 @@ export async function createOrder(input: CreateOrderInput): Promise<DbOrder> {
         orders.push({ ...order, items })
         localStorage.setItem('hn_orders', JSON.stringify(orders))
         return order
-      } catch (e) {
+      } catch {
         throw err
       }
     }

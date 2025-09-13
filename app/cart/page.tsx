@@ -42,8 +42,8 @@ export default function CartPage() {
         }).filter(Boolean)
         
         setDetailedItems(detailed)
-      } catch (error) {
-        console.error('Failed to load cart details', error)
+      } catch {
+        console.error('Failed to load cart details')
         showToast('Failed to load cart items', 'error')
       } finally {
         setLoading(false)
@@ -96,20 +96,13 @@ export default function CartPage() {
     try {
       const orderData = {
         customer_name: customerDetails.name,
-        customer_phone: customerDetails.phone,
-        customer_address: customerDetails.address,
-        customer_city: customerDetails.city,
-        customer_postal_code: customerDetails.postalCode,
+        phone: customerDetails.phone,
+        address: `${customerDetails.address}, ${customerDetails.city}, ${customerDetails.postalCode}`,
         items: detailedItems.map(item => ({
           product_id: item.productId,
-          quantity: item.qty,
+          qty: item.qty,
           price: item.product.price
-        })),
-        subtotal,
-        shipping,
-        tax,
-        total,
-        payment_method: 'cod'
+        }))
       }
 
       const order = await createOrder(orderData)
@@ -118,8 +111,8 @@ export default function CartPage() {
       
       showToast('Order placed successfully!', 'success')
       router.push(`/cart/success?orderId=${order.id}`)
-    } catch (error) {
-      console.error('Failed to place order', error)
+    } catch {
+      console.error('Failed to place order')
       showToast('Failed to place order. Please try again.', 'error')
     } finally {
       setIsPlacingOrder(false)

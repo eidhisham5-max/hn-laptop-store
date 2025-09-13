@@ -37,8 +37,8 @@ export default function ProductDetailPage() {
         
         // Load related products (simplified - in real app, this would be an API call)
         setRelatedProducts([])
-      } catch (err) {
-        console.error('Failed to load product', err)
+      } catch {
+        console.error('Failed to load product')
         setError('Failed to load product')
       } finally {
         setLoading(false)
@@ -58,7 +58,7 @@ export default function ProductDetailPage() {
         await addToCart(product.id)
       }
       showToast(`${quantity} item(s) added to cart!`, 'success')
-    } catch (error) {
+    } catch {
       showToast('Failed to add product to cart', 'error')
     } finally {
       setAddingToCart(false)
@@ -337,7 +337,7 @@ export default function ProductDetailPage() {
                     <span className="text-xl text-gray-500 line-through">
                       ${product.original_price.toLocaleString()}
                     </span>
-                    <Badge variant="destructive">
+                    <Badge variant="error">
                       Save ${(product.original_price - product.price).toLocaleString()}
                     </Badge>
                   </>

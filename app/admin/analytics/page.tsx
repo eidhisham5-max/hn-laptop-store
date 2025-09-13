@@ -47,10 +47,7 @@ export default function AdminAnalytics() {
     try {
       setLoading(true)
       
-      const [ordersData, productsData] = await Promise.all([
-        fetchOrders(),
-        fetchProducts()
-      ])
+      const ordersData = await fetchOrders()
 
       // Calculate analytics
       const totalRevenue = ordersData.reduce((sum: number, order: any) => sum + order.total, 0)

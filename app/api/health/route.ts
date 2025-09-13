@@ -27,7 +27,7 @@ export async function GET() {
         if (error) {
           dbStatus = 'unhealthy';
         }
-      } catch (error) {
+      } catch {
         dbStatus = 'unhealthy';
       }
     } else {
