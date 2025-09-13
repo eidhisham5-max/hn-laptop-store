@@ -96,20 +96,13 @@ export default function CartPage() {
     try {
       const orderData = {
         customer_name: customerDetails.name,
-        customer_phone: customerDetails.phone,
-        customer_address: customerDetails.address,
-        customer_city: customerDetails.city,
-        customer_postal_code: customerDetails.postalCode,
+        phone: customerDetails.phone,
+        address: customerDetails.address,
         items: detailedItems.map(item => ({
-          product_id: item.productId,
-          quantity: item.qty,
+          product_id: parseInt(item.productId),
+          qty: item.qty,
           price: item.product.price
-        })),
-        subtotal,
-        shipping,
-        tax,
-        total,
-        payment_method: 'cod'
+        }))
       }
 
       const order = await createOrder(orderData)
