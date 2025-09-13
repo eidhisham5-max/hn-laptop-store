@@ -12,7 +12,7 @@ export interface Product {
   originalPrice?: number
   image: string
   brand: string
-  condition: 'new' | 'refurbished' | 'used'
+  condition: 'New' | 'Refurbished' | 'Used'
   rating: number
   reviewCount: number
   inStock: boolean

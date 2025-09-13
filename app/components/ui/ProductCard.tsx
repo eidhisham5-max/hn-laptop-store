@@ -8,7 +8,7 @@ import { Badge } from './Badge'
 import { cn } from '../../lib/utils'
 
 export interface Product {
-  id: number
+  id: string
   name: string
   price: number
   originalPrice?: number
@@ -24,8 +24,8 @@ export interface Product {
 
 export interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: Product
-  onAddToCart?: (productId: number, quantity?: number) => void
-  onQuickView?: (productId: number) => void
+  onAddToCart?: (productId: string, quantity?: number) => void
+  onQuickView?: (productId: string) => void
   showQuickActions?: boolean
   variant?: 'default' | 'compact' | 'detailed'
 }

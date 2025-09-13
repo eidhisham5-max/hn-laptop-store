@@ -87,7 +87,7 @@ export default function ProductsPage() {
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let filtered = products.filter(product => {
+    const filtered = products.filter(product => {
       // Search query
       if (debouncedQuery && !product.name.toLowerCase().includes(debouncedQuery.toLowerCase()) && 
           !product.specs?.toLowerCase().includes(debouncedQuery.toLowerCase())) {
