@@ -1,8 +1,8 @@
 'use client'
 import React from 'react'
 import { ProductCard } from '../ui/ProductCard'
-import { SkeletonCard } from '../ui/Skeleton'
-import { EmptyProducts } from '../ui/EmptyState'
+import { SkeletonCard } from '../ui/SkeletonCard'
+import { EmptyProducts } from '../ui/EmptyProducts'
 import { cn } from '../../lib/utils'
 
 export interface Product {
