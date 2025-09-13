@@ -1,5 +1,6 @@
-@import "tailwindcss";
-@import './responsive.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* ========================================
    DESIGN SYSTEM - CSS CUSTOM PROPERTIES
