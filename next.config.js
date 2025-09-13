@@ -13,6 +13,10 @@ const nextConfig = {
         aggregateTimeout: 300,
       }
     }
+    
+    // حل مشاكل Webpack cache
+    config.cache = false
+    
     return config
   },
   
