@@ -1,29 +1,23 @@
 'use client'
 import React from 'react'
 import { ProductCard } from '../ui/ProductCard'
-import { SkeletonCard } from '../ui/Skeleton'
-import { EmptyProducts } from '../ui/EmptyState'
+import { SkeletonCard } from '../ui/SkeletonCard'
+import { EmptyProducts } from '../ui/EmptyProducts'
 import { cn } from '../../lib/utils'
 
 export interface Product {
-  id: string
+  id: number
   name: string
   price: number
   originalPrice?: number
-  image: string
+  images: string[]
   brand: string
-  condition: 'new' | 'refurbished' | 'used'
+  condition: 'New' | 'Refurbished' | 'Used'
   rating: number
-  reviewCount: number
-  inStock: boolean
-  stockCount?: number
+  reviews: number
+  stock?: number
   discount?: number
-  specs?: {
-    processor?: string
-    memory?: string
-    storage?: string
-    display?: string
-  }
+  specs?: string
 }
 
 export interface ProductGridProps {
