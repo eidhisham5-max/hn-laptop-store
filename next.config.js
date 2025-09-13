@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // إعدادات TypeScript
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  
   // تحسين الصور
   images: {
     remotePatterns: [
