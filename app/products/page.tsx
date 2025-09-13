@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { Select } from '../components/ui/Select'
-import { Badge } from '../components/ui/Badge'
 import { useToast } from '../components/ToastProvider'
 import { addToCart } from '../data/products'
 import { fetchProducts } from '../data/db'
@@ -58,8 +57,8 @@ export default function ProductsPage() {
       try {
         const fetchedProducts = await fetchProducts()
         setProducts(fetchedProducts)
-      } catch (err) {
-        console.error('Failed to fetch products', err)
+      } catch {
+        console.error('Failed to fetch products')
         setError('Failed to load products')
       } finally {
         setLoading(false)
@@ -142,7 +141,7 @@ export default function ProductsPage() {
     try {
       await addToCart(product.id)
       showToast('Product added to cart!', 'success')
-    } catch (error) {
+    } catch {
       showToast('Failed to add product to cart', 'error')
     }
   }

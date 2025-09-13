@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     // Here, as a fallback, we don't change specific local order without mapping. Just acknowledge.
 
     return NextResponse.json({ ok: true, success, paymobOrderId, amountCents })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ ok: false }, { status: 400 })
   }
 }

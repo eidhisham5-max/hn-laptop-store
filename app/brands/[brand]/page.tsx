@@ -24,8 +24,8 @@ export default function BrandPage() {
       try {
         const products = await fetchProducts()
         setAllProducts(products)
-      } catch (e) {
-        console.error('Failed to fetch products', e)
+      } catch {
+        console.error('Failed to fetch products')
         setError('Failed to load products.')
         setAllProducts([])
       } finally {

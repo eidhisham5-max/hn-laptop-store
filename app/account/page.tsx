@@ -37,8 +37,8 @@ export default function AccountPage() {
     try {
       const userOrders = await fetchOrdersByPhone(phone)
       setOrders(userOrders)
-    } catch (err) {
-      console.error('Failed to fetch orders', err)
+    } catch {
+      console.error('Failed to fetch orders')
       setError('Failed to load orders. Please try again.')
       setOrders([])
     } finally {

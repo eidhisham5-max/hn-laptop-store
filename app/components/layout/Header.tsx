@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Button } from '../ui/Button'
 import { Badge } from '../ui/Badge'
 import { cn } from '../../lib/utils'
@@ -14,7 +13,6 @@ const Header: React.FC<HeaderProps> = ({ className }) => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
-  const router = useRouter()
 
   useEffect(() => {
     const handleScroll = () => {

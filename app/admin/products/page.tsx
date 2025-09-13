@@ -69,7 +69,7 @@ export default function AdminProducts() {
         await deleteProduct(id)
         setProducts(prev => prev.filter(p => p.id !== id))
         showToast('Product deleted successfully', 'success')
-      } catch (error) {
+      } catch {
         showToast('Failed to delete product', 'error')
       }
     }
@@ -86,12 +86,6 @@ export default function AdminProducts() {
     )
   }
 
-  const stats = {
-    total: products.length,
-    active: products.filter(p => p.status === 'Active').length,
-    outOfStock: products.filter(p => p.stock === 0).length,
-    lowStock: products.filter(p => p.stock > 0 && p.stock < 10).length
-  }
 
   return (
     <AdminGuard>

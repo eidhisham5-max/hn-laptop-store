@@ -17,7 +17,7 @@ export default function CustomerOrdersPage() {
     try {
       const data = await fetchOrdersByPhone(normalized)
       setOrders(data)
-    } catch (e) {
+    } catch {
       setError('تعذر جلب الطلبات. حاول لاحقاً.')
     } finally {
       setLoading(false)

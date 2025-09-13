@@ -32,7 +32,7 @@ export default function LoginPage() {
       
       showToast('Login successful!', 'success')
       router.push('/admin')
-    } catch (err) {
+    } catch {
       showToast('Login failed. Please try again.', 'error')
     } finally {
       setIsLoading(false)

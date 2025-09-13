@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     const iframeUrl = `https://accept.paymob.com/api/acceptance/iframes/${PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`
     return NextResponse.json({ iframeUrl, orderId: localOrder.id })
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }

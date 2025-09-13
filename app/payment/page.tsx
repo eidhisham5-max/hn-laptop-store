@@ -10,7 +10,6 @@ export default function PaymentPage() {
   const { showToast } = useToast()
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'card' | 'bank'>('cod')
   const [isProcessing, setIsProcessing] = useState(false)
-  const [items, setItems] = useState<{ productId: number; qty: number }[]>([])
   const [detailed, setDetailed] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
@@ -21,7 +20,6 @@ export default function PaymentPage() {
     async function load() {
       setLoading(true)
       const cart = getCart()
-      setItems(cart)
       try {
         const ids = cart.map(i => i.productId)
         const prods = await fetchProductsByIds(ids)

@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from './components/ui/Button'
 import { ProductGrid } from './components/products/ProductGrid'
-import { Badge } from './components/ui/Badge'
 import { useToast } from './components/ToastProvider'
 import { addToCart } from './data/products'
 
@@ -111,7 +110,7 @@ export default function Home() {
     try {
       await addToCart(product)
       showToast('Product added to cart!', 'success')
-    } catch (error) {
+    } catch {
       showToast('Failed to add product to cart', 'error')
     }
   }
