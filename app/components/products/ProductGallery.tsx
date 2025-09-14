@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { Button } from '../ui/Button'
+// import { Button } from '../ui/Button'
 import { cn } from '../../lib/utils'
 
 export interface ProductGalleryProps {
@@ -77,7 +77,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({
         <div className="relative group">
           <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
             <Image
-              src={selectedImage}
+              src={selectedImage || ''}
               alt={`${productName} - Image ${selectedImageIndex + 1}`}
               fill
               className={cn(
@@ -184,7 +184,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({
             
             <div className="relative">
               <Image
-                src={selectedImage}
+                src={selectedImage || ''}
                 alt={`${productName} - Fullscreen`}
                 width={800}
                 height={600}

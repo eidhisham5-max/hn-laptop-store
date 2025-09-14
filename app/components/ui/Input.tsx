@@ -4,18 +4,18 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
 const inputVariants = cva(
-  "flex w-full rounded-lg border-2 bg-white px-4 py-3 text-base transition-all duration-200 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-md border-2 bg-background-primary px-4 py-3 text-body-md font-arabic transition-all duration-normal ease-out file:border-0 file:bg-transparent file:text-body-sm file:font-medium placeholder:text-text-disabled focus-visible:outline-none focus-visible:border-primary-500 focus-visible:shadow-[0_0_0_3px_rgba(11,109,243,0.1)] disabled:cursor-not-allowed disabled:bg-neutral-100 disabled:text-text-disabled hover:border-border-strong",
   {
     variants: {
       variant: {
-        default: "border-gray-200 focus:border-primary-500",
-        error: "border-error-500 focus:border-error-500 focus-visible:ring-error-500",
-        success: "border-success-500 focus:border-success-500 focus-visible:ring-success-500"
+        default: "border-border-default text-text-primary",
+        error: "border-error-500 text-text-primary focus-visible:border-error-500 focus-visible:shadow-[0_0_0_3px_rgba(231,76,60,0.1)]",
+        success: "border-success-500 text-text-primary focus-visible:border-success-500 focus-visible:shadow-[0_0_0_3px_rgba(32,201,151,0.1)]"
       },
       size: {
-        sm: "h-9 px-3 py-2 text-sm",
-        md: "h-11 px-4 py-3 text-base",
-        lg: "h-12 px-4 py-3 text-lg"
+        sm: "h-10 px-3 py-2 text-body-sm min-h-[40px]",
+        md: "h-12 px-4 py-3 text-body-md min-h-[48px]", // Touch target compliance
+        lg: "h-14 px-4 py-3 text-body-lg min-h-[56px]"
       }
     },
     defaultVariants: {
@@ -26,7 +26,7 @@ const inputVariants = cva(
 )
 
 export interface InputProps 
-  extends React.InputHTMLAttributes<HTMLInputElement>,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
     VariantProps<typeof inputVariants> {
   label?: string
   error?: string
@@ -63,8 +63,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <label 
             htmlFor={inputId}
             className={cn(
-              'text-sm font-medium text-gray-900',
-              required && "after:content-['*'] after:ml-0.5 after:text-error-500"
+              'text-body-sm font-medium text-text-primary block',
+              required && "after:content-['*'] after:mr-0.5 after:text-error-500"
             )}
           >
             {label}
@@ -73,7 +73,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-text-disabled"> {/* RTL: left becomes right */}
               {leftIcon}
             </div>
           )}
@@ -82,28 +82,33 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             type={type}
             className={cn(
               inputVariants({ variant: inputVariant, size }),
-              leftIcon && "pl-10",
-              rightIcon && "pr-10",
+              leftIcon && "pr-10", /* RTL: pl becomes pr */
+              rightIcon && "pl-10", /* RTL: pr becomes pl */
               className
             )}
             ref={ref}
             id={inputId}
+            dir="auto" // Auto-detect text direction
             {...props}
           />
           
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-disabled"> {/* RTL: right becomes left */}
               {rightIcon}
             </div>
           )}
         </div>
         
         {error && (
-          <p className="text-sm text-error-500">{error}</p>
+          <p className="text-body-sm text-error-500 font-medium" role="alert" aria-live="polite">
+            {error}
+          </p>
         )}
         
         {helperText && !error && (
-          <p className="text-sm text-gray-500">{helperText}</p>
+          <p className="text-body-sm text-text-secondary">
+            {helperText}
+          </p>
         )}
       </div>
     )

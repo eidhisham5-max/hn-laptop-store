@@ -210,10 +210,14 @@ targeting:
   traffic:
     percentage: 100 # percentage of eligible users
     ramp_up_schedule:
-      - day: 1, percentage: 10
-      - day: 3, percentage: 25  
-      - day: 5, percentage: 50
-      - day: 7, percentage: 100
+      - day: 1
+        percentage: 10
+      - day: 3
+        percentage: 25  
+      - day: 5
+        percentage: 50
+      - day: 7
+        percentage: 100
     
   # Randomization
   randomization:

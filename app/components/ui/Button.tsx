@@ -4,22 +4,22 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-2 font-medium transition-all duration-normal ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
-        primary: 'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-button hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm',
-        secondary: 'bg-transparent text-primary-500 border-2 border-primary-500 hover:bg-primary-50 hover:border-primary-600 hover:text-primary-600',
-        outline: 'bg-transparent text-gray-900 border border-gray-300 hover:bg-gray-50 hover:border-gray-400',
-        ghost: 'bg-transparent text-gray-900 hover:bg-gray-100',
-        destructive: 'bg-error-500 text-white hover:bg-error-600 active:bg-error-700 shadow-button hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm'
+        primary: 'bg-primary-500 text-text-inverse border-transparent shadow-button hover:bg-primary-600 hover:shadow-lg hover:-translate-y-0.5 active:bg-primary-700 active:translate-y-0 active:shadow-sm disabled:bg-neutral-300 disabled:text-text-disabled disabled:shadow-none disabled:transform-none',
+        secondary: 'bg-transparent text-primary-500 border-2 border-primary-500 hover:bg-primary-50 hover:border-primary-600 hover:text-primary-600 active:bg-primary-100 disabled:bg-neutral-100 disabled:border-neutral-300 disabled:text-text-disabled',
+        ghost: 'bg-transparent text-text-secondary border-transparent hover:bg-neutral-100 hover:text-text-primary active:bg-neutral-200',
+        outline: 'bg-transparent text-text-primary border border-border-default hover:bg-neutral-50 hover:border-border-strong active:bg-neutral-100',
+        destructive: 'bg-error-500 text-text-inverse border-transparent shadow-button hover:bg-error-600 hover:shadow-lg hover:-translate-y-0.5 active:bg-error-700 active:translate-y-0 active:shadow-sm'
       },
       size: {
-        sm: 'h-8 px-3 text-sm rounded-lg',
-        md: 'h-10 px-4 text-base rounded-lg',
-        lg: 'h-12 px-6 text-lg rounded-xl',
-        xl: 'h-14 px-8 text-xl rounded-xl',
-        icon: 'h-10 w-10 rounded-lg'
+        sm: 'h-8 px-4 text-body-sm rounded-md min-w-[64px]',
+        md: 'h-12 px-6 text-body-md rounded-md min-w-[96px]', // 48px height for touch targets
+        lg: 'h-14 px-8 text-body-lg rounded-lg min-w-[128px]',
+        xl: 'h-16 px-10 text-body-xl rounded-lg min-w-[160px]',
+        icon: 'h-12 w-12 rounded-md' // 48px for touch targets
       },
       fullWidth: {
         true: 'w-full',

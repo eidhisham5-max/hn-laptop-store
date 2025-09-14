@@ -7,20 +7,9 @@ import { Button } from './Button'
 import { Badge } from './Badge'
 import { cn } from '../../lib/utils'
 
-export interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  specs?: string | { processor?: string; memory?: string; storage?: string; display?: string }
-  condition?: 'New' | 'Refurbished' | 'Used'
-  rating?: number
-  reviews?: number
-  discount?: number
-  inStock?: boolean
-  brand?: string | { name?: string }
-}
+import { Product as ProductType } from '../../data/products'
+
+export type Product = ProductType
 
 export interface ProductCardProps extends React.HTMLAttributes<HTMLDivElement> {
   product: Product
@@ -45,29 +34,25 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
       name,
       price,
       originalPrice,
-      image,
+      images,
       specs,
       condition,
       rating,
       reviews,
       discount,
-      inStock = true,
+      stock = 0,
       brand
     } = product
 
-    const specsText = typeof specs === 'string'
-      ? specs
-      : specs
-        ? [specs.processor, specs.memory, specs.storage, specs.display]
-            .filter(Boolean)
-            .join(' • ')
-        : ''
+    const inStock = stock > 0
+
+    const specsText = typeof specs === 'string' ? specs : ''
 
     const savings = originalPrice ? originalPrice - price : 0
-    const imageSrc = image && image.trim() !== ''
-      ? image
+    const imageSrc = images && images.length > 0 && images[0].trim() !== ''
+      ? images[0]
       : 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg'
-    const brandText = typeof brand === 'string' ? brand : (brand && (brand as any).name) || ''
+    const brandText = typeof brand === 'string' ? brand : ''
     const discountPercentage = originalPrice ? Math.round((savings / originalPrice) * 100) : 0
 
     const renderStars = (rating: number) => {
@@ -145,11 +130,11 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
               
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-primary-600">
-                  ${price.toLocaleString()}
+                  {price.toLocaleString()} ريال
                 </span>
                 {originalPrice && (
                   <span className="text-sm text-gray-400 line-through">
-                    ${originalPrice.toLocaleString()}
+                    {originalPrice.toLocaleString()} ريال
                   </span>
                 )}
               </div>
@@ -170,7 +155,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                   onClick={() => onAddToCart?.(id, 1)}
                   disabled={!inStock}
                 >
-                  {inStock ? 'Add to Cart' : 'Out of Stock'}
+                  {inStock ? 'أضف للسلة' : 'نفد المخزون'}
                 </Button>
                 {onQuickView && (
                   <Button
@@ -178,7 +163,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                     size="sm"
                     onClick={() => onQuickView(id)}
                   >
-                    Quick View
+                    عرض سريع
                   </Button>
                 )}
               </div>
@@ -244,18 +229,18 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl font-bold text-primary-600">
-                    ${price.toLocaleString()}
+                    {price.toLocaleString()} ريال
                   </span>
                   {originalPrice && (
                     <span className="text-lg text-gray-400 line-through">
-                      ${originalPrice.toLocaleString()}
+                      {originalPrice.toLocaleString()} ريال
                     </span>
                   )}
                 </div>
                 
                 {savings > 0 && (
                   <p className="text-sm text-success-600 font-medium">
-                    Save ${savings.toLocaleString()} ({discountPercentage}% off)
+                    توفير {savings.toLocaleString()} ريال ({discountPercentage}% خصم)
                   </p>
                 )}
               </div>
@@ -268,7 +253,7 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                 <span className={cn(
                   inStock ? 'text-success-600' : 'text-error-600'
                 )}>
-                  {inStock ? 'In Stock' : 'Out of Stock'}
+                  {inStock ? 'متوفر' : 'نفد المخزون'}
                 </span>
               </div>
             </div>
@@ -280,14 +265,14 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
                   onClick={() => onAddToCart?.(id, 1)}
                   disabled={!inStock}
                 >
-                  {inStock ? 'Add to Cart' : 'Out of Stock'}
+                  {inStock ? 'أضف للسلة' : 'نفد المخزون'}
                 </Button>
                 {onQuickView && (
                   <Button
                     variant="outline"
                     onClick={() => onQuickView(id)}
                   >
-                    Quick View
+                    عرض سريع
                   </Button>
                 )}
               </div>
@@ -352,18 +337,18 @@ const ProductCard = React.forwardRef<HTMLDivElement, ProductCardProps>(
             
             <div className="flex items-center gap-3">
               <span className="text-xl font-bold text-primary-600">
-                ${price.toLocaleString()}
+                {price.toLocaleString()} ريال
               </span>
               {originalPrice && (
                 <span className="text-sm text-gray-400 line-through">
-                  ${originalPrice.toLocaleString()}
+                  {originalPrice.toLocaleString()} ريال
                 </span>
               )}
             </div>
             
             {savings > 0 && (
               <p className="text-sm text-success-600 font-medium">
-                Save ${savings.toLocaleString()}
+                توفير {savings.toLocaleString()} ريال
               </p>
             )}
           </div>

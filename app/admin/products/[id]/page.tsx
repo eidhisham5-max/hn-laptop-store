@@ -1,177 +1,130 @@
 'use client'
-import { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { supabase } from '../../../../supabaseClient'
-import { fetchProductById, fetchBrands, updateProduct } from '../../../data/db'
-import { useToast } from '../../../components/ToastProvider'
+import { Button } from '../../../components/ui/Button'
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/Card'
+import { useLanguage } from '../../../contexts/LanguageContext'
 
-export default function EditProductPage() {
+export default function AdminProductDetailPage() {
+  const { t, isRTL } = useLanguage()
+  const params = useParams()
   const router = useRouter()
-  const params = useParams<{ id: string }>()
-  const productId = Number(params?.id)
-  const { showToast } = useToast()
-
+  const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [brands, setBrands] = useState<{ id: number; name: string }[]>([])
-  const [form, setForm] = useState({
-    name: '',
-    brand_id: '',
-    price: '',
-    original_price: '',
-    stock: '',
-    condition: 'New',
-    status: 'Active',
-    specs: '',
-    description: ''
-  })
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getSession()
-      const email = data.session?.user?.email
-      const allowed = email && (!process.env.NEXT_PUBLIC_ADMIN_EMAIL || email.toLowerCase() === process.env.NEXT_PUBLIC_ADMIN_EMAIL.toLowerCase())
-      if (!allowed) { router.push('/login'); return }
-      try {
-        setLoading(true)
-        const [p, b] = await Promise.all([
-          fetchProductById(productId),
-          fetchBrands()
-        ])
-        setBrands(b)
-        if (!p) { showToast('Product not found', 'error'); router.push('/admin/products'); return }
-        setForm({
-          name: p.name || '',
-          brand_id: String(p.brand_id || ''),
-          price: String(p.price ?? ''),
-          original_price: p.original_price != null ? String(p.original_price) : '',
-          stock: String(p.stock ?? ''),
-          condition: p.condition || 'New',
-          status: p.status || 'Active',
-          specs: p.specs || '',
-          description: p.description || ''
-        })
-      } finally {
-        setLoading(false)
-      }
-    })()
-  }, [router, productId, showToast])
+    loadProduct()
+  }, [params.id])
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
-  }
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSubmitting(true)
-    try {
-      await updateProduct(productId, {
-        name: form.name,
-        brand_id: Number(form.brand_id),
-        price: parseFloat(form.price),
-        original_price: form.original_price ? parseFloat(form.original_price) : null,
-        stock: parseInt(form.stock || '0', 10),
-        condition: form.condition as any,
-        status: form.status as any,
-        specs: form.specs,
-        description: form.description,
-      })
-      showToast('Product updated successfully!', 'success')
-      router.push('/admin/products')
-    } catch (err) {
-      showToast('Failed to update product', 'error')
-    } finally {
-      setSubmitting(false)
+  const loadProduct = async () => {
+    setLoading(true)
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    const mockProduct = {
+      id: params.id,
+      name: 'Dell XPS 13',
+      brand: 'Dell',
+      category: 'Ultrabook',
+      price: 1200,
+      originalPrice: 1400,
+      stock: 8,
+      condition: 'New',
+      specs: 'Intel i7, 16GB RAM, 512GB SSD',
+      description: 'Ultrabook premium with excellent battery life.',
+      images: [
+        'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=600&fit=crop&auto=format',
+        'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop&auto=format'
+      ],
+      rating: 4.8,
+      reviews: 124,
+      discount: 14,
+      status: 'Active',
+      createdAt: '2024-01-15'
     }
+
+    setProduct(mockProduct)
+    setLoading(false)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center" dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-red-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200 mb-8">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-600 rounded-lg text-white flex items-center justify-center">🛠️</div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Edit Product</h1>
-              <p className="text-sm text-gray-600">Update product details</p>
-            </div>
-          </div>
-          <Link href="/admin/products" className="text-gray-700 hover:text-red-600">← Back</Link>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50" dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <Button 
+            variant="outline" 
+            onClick={() => router.back()}
+            className="mb-4"
+          >
+            {isRTL ? '← العودة' : '← Back'}
+          </Button>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isRTL ? 'تفاصيل المنتج' : 'Product Details'}
+          </h1>
         </div>
-      </header>
 
-      <div className="container mx-auto px-4">
-        <form onSubmit={onSubmit} className="bg-white rounded-xl shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
-            <input name="name" value={form.name} onChange={onChange} required className="w-full px-4 py-2 border rounded-lg" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-            <select name="brand_id" value={form.brand_id} onChange={onChange} required className="w-full px-4 py-2 border rounded-lg">
-              <option value="">Select brand</option>
-              {brands.map(b=> <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
-            <input name="price" type="number" min="0" step="0.01" value={form.price} onChange={onChange} required className="w-full px-4 py-2 border rounded-lg" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Original Price</label>
-            <input name="original_price" type="number" min="0" step="0.01" value={form.original_price} onChange={onChange} className="w-full px-4 py-2 border rounded-lg" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-            <input name="stock" type="number" min="0" value={form.stock} onChange={onChange} required className="w-full px-4 py-2 border rounded-lg" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Condition</label>
-            <select name="condition" value={form.condition} onChange={onChange} className="w-full px-4 py-2 border rounded-lg">
-              <option value="New">New</option>
-              <option value="Refurbished">Refurbished</option>
-              <option value="Used">Used</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select name="status" value={form.status} onChange={onChange} className="w-full px-4 py-2 border rounded-lg">
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Specs</label>
-            <textarea name="specs" rows={3} value={form.specs} onChange={onChange} className="w-full px-4 py-2 border rounded-lg" />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-            <textarea name="description" rows={4} value={form.description} onChange={onChange} className="w-full px-4 py-2 border rounded-lg" />
-          </div>
-          <div className="md:col-span-2 flex gap-3">
-            <button type="submit" disabled={submitting} className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium disabled:opacity-50">
-              {submitting ? 'Saving...' : 'Save Changes'}
-            </button>
-            <Link href="/admin/products" className="px-6 py-3 bg-gray-500 text-white rounded-lg font-medium">Cancel</Link>
-          </div>
-        </form>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>{product.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div>
+                  <label className="font-semibold text-gray-700">Brand:</label>
+                  <p className="text-gray-600">{product.brand}</p>
+                </div>
+                <div>
+                  <label className="font-semibold text-gray-700">Category:</label>
+                  <p className="text-gray-600">{product.category}</p>
+                </div>
+                <div>
+                  <label className="font-semibold text-gray-700">Price:</label>
+                  <p className="text-gray-600">${product.price}</p>
+                </div>
+                <div>
+                  <label className="font-semibold text-gray-700">Stock:</label>
+                  <p className="text-gray-600">{product.stock}</p>
+                </div>
+                <div>
+                  <label className="font-semibold text-gray-700">Status:</label>
+                  <p className="text-gray-600">{product.status}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>{isRTL ? 'الإجراءات' : 'Actions'}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Button className="w-full">
+                  {isRTL ? 'تعديل المنتج' : 'Edit Product'}
+                </Button>
+                <Button variant="outline" className="w-full">
+                  {isRTL ? 'تحديث المخزون' : 'Update Stock'}
+                </Button>
+                <Button variant="destructive" className="w-full">
+                  {isRTL ? 'حذف المنتج' : 'Delete Product'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
 }
-
-
-

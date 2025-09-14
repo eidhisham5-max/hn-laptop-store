@@ -1,0 +1,38 @@
+# Global owners
+* @hnlaptopstore/owners
+
+# Core application files
+/app/ @hnlaptopstore/core-team
+/components/ @hnlaptopstore/core-team
+/lib/ @hnlaptopstore/core-team
+
+# UI Components
+/components/ui/ @hnlaptopstore/design-team
+
+# Admin dashboard
+/app/admin/ @hnlaptopstore/admin-team
+/components/admin/ @hnlaptopstore/admin-team
+
+# Authentication
+/app/auth/ @hnlaptopstore/security-team
+
+# Configuration files
+*.config.js @hnlaptopstore/devops-team
+*.config.ts @hnlaptopstore/devops-team
+package.json @hnlaptopstore/devops-team
+tsconfig.json @hnlaptopstore/devops-team
+
+# Documentation
+*.md @hnlaptopstore/docs-team
+/docs/ @hnlaptopstore/docs-team
+
+# GitHub workflows
+/.github/ @hnlaptopstore/devops-team
+
+# Security
+SECURITY.md @hnlaptopstore/security-team
+.github/SECURITY.md @hnlaptopstore/security-team
+
+# Dependencies
+package-lock.json @hnlaptopstore/devops-team
+yarn.lock @hnlaptopstore/devops-team

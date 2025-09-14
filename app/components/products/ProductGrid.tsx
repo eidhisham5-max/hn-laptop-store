@@ -1,30 +1,13 @@
 'use client'
 import React from 'react'
 import { ProductCard } from '../ui/ProductCard'
-import { SkeletonCard } from '../ui/Skeleton'
-import { EmptyProducts } from '../ui/EmptyState'
+import { SkeletonCard } from '../ui/SkeletonCard'
+import { EmptyProducts } from '../ui/EmptyProducts'
 import { cn } from '../../lib/utils'
 
-export interface Product {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  brand: string
-  condition: 'new' | 'refurbished' | 'used'
-  rating: number
-  reviewCount: number
-  inStock: boolean
-  stockCount?: number
-  discount?: number
-  specs?: {
-    processor?: string
-    memory?: string
-    storage?: string
-    display?: string
-  }
-}
+import { Product as ProductType } from '../../data/products'
+
+export type Product = ProductType
 
 export interface ProductGridProps {
   products: Product[]
@@ -33,6 +16,7 @@ export interface ProductGridProps {
   viewMode?: 'grid' | 'list'
   columns?: 1 | 2 | 3 | 4
   className?: string
+  language?: 'ar' | 'en'
   onProductClick?: (product: Product) => void
   onAddToCart?: (product: Product) => void
 }
@@ -44,6 +28,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   viewMode = 'grid',
   columns = 4,
   className,
+  language = 'ar',
   onProductClick,
   onAddToCart
 }) => {
@@ -51,8 +36,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="text-red-500 text-lg font-medium mb-2">Error loading products</div>
-          <div className="text-gray-500">{error}</div>
+          <div className="text-error-500 text-h5 font-medium mb-2">
+            {language === 'ar' ? 'خطأ في تحميل المنتجات' : 'Error loading products'}
+          </div>
+          <div className="text-text-secondary text-body-md">{error}</div>
         </div>
       </div>
     )
@@ -102,7 +89,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({
         <ProductCard
           key={product.id}
           product={product}
-          onClick={() => onProductClick?.(product)}
+          variant={viewMode === 'list' ? 'detailed' : 'default'}
+          onQuickView={() => onProductClick?.(product)}
           onAddToCart={() => onAddToCart?.(product)}
         />
       ))}

@@ -40,7 +40,7 @@ export interface ToastProps extends VariantProps<typeof toastVariants> {
 }
 
 const Toast: React.FC<ToastProps> = ({
-  id,
+  // id,
   title,
   message,
   variant = 'info',
@@ -61,6 +61,7 @@ const Toast: React.FC<ToastProps> = ({
 
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [duration])
 
   const handleClose = () => {
@@ -106,7 +107,7 @@ const Toast: React.FC<ToastProps> = ({
       role="alert"
       aria-live="polite"
     >
-      {icons[variant]}
+      {icons[variant as keyof typeof icons] || null}
       
       <div className="flex-1 min-w-0">
         {title && (

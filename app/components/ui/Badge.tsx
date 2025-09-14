@@ -3,7 +3,7 @@ import React from 'react'
 import { cn } from '../../lib/utils'
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info' | 'destructive'
   size?: 'sm' | 'md' | 'lg'
   rounded?: boolean
 }
@@ -19,7 +19,8 @@ const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
       success: 'bg-success-100 text-success-800 hover:bg-success-200',
       warning: 'bg-warning-100 text-warning-800 hover:bg-warning-200',
       error: 'bg-error-100 text-error-800 hover:bg-error-200',
-      info: 'bg-info-100 text-info-800 hover:bg-info-200'
+      info: 'bg-info-100 text-info-800 hover:bg-info-200',
+      destructive: 'bg-red-100 text-red-800 hover:bg-red-200'
     }
     
     const sizes = {
