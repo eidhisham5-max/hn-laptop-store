@@ -77,13 +77,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button'
     
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, fullWidth, loading, className }))}
-        ref={ref}
-        disabled={disabled || loading}
-        {...props}
-      >
+    const buttonContent = (
+      <>
         {loading && (
           <svg
             className="mr-2 h-4 w-4 animate-spin"
@@ -112,6 +107,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
         {!loading && rightIcon && (
           <span className="ml-2">{rightIcon}</span>
+        )}
+      </>
+    )
+    
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, fullWidth, loading, className }))}
+        ref={ref}
+        disabled={disabled || loading}
+        {...props}
+      >
+        {asChild ? (
+          <span className="contents">
+            {buttonContent}
+          </span>
+        ) : (
+          buttonContent
         )}
       </Comp>
     )
