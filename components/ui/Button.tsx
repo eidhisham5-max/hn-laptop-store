@@ -77,6 +77,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const Comp = asChild ? Slot : 'button'
     
+    // When using asChild, we need to ensure only one child element for Slot
+    if (asChild) {
+      // Clone the child element and add our props to it
+      const child = React.Children.only(children as React.ReactElement)
+      return React.cloneElement(child, {
+        className: cn(
+          buttonVariants({ variant, size, fullWidth, loading }),
+          child.props.className,
+          className
+        ),
+        ref,
+        disabled: disabled || loading,
+        ...props,
+        ...child.props,
+      })
+    }
+    
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, fullWidth, loading, className }))}
